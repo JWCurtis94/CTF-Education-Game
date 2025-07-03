@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Alien Stronghold - Cyber Defense CTF</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .challenge-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .challenge-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .challenge-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.1) 10px,
+                rgba(255, 255, 255, 0.1) 20px
+            );
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .challenge-content {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .mothership-interface {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #00ff00;
+            padding: 2rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            border: 3px solid #e74c3c;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mothership-interface::before {
+            content: '🚨 ALIEN MOTHERSHIP MAINFRAME 🚨';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .terminal-content {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .multi-challenge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .mini-challenge {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .mini-challenge:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .mini-challenge.completed {
+            background: linear-gradient(135deg, var(--surface-color), rgba(40, 167, 69, 0.1));
+            border-color: var(--success-color);
+        }
+        
+        .mini-challenge h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .mini-challenge.completed h4 {
+            color: var(--success-color);
+        }
+        
+        .challenge-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            background: var(--surface-color);
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+        
+        .challenge-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .mini-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .mini-submit:hover {
+            background: var(--accent-color);
+        }
+        
+        .mini-submit:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .progress-bar {
+            background: var(--border-color);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .alien-character {
+            font-size: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .final-flag-display {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            text-align: center;
+            display: none;
+            animation: victory 2s ease-in-out infinite;
+        }
+        
+        @keyframes victory {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .hint-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+        
+        .mothership-status {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .system-breach {
+            background: rgba(40, 167, 69, 0.1);
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            display: none;
+        }
+        
+        .countdown-timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            text-align: center;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .mini-result {
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .mini-result.success {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+        }
+        
+        .mini-result.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--error-color);
+        }
+        
+        .final-sequence {
+            background: linear-gradient(135deg, #6f42c1, #007bff);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="challenge-container">
+        <button class="btn btn-secondary back-button" onclick="window.close()">
+            ← Back to Game
+        </button>
+        
+        <div class="challenge-header">
+            <div class="alien-character">🛸</div>
+            <h1>🚨 FINAL ALIEN STRONGHOLD 🚨</h1>
+            <p>The Ultimate Challenge - Save Earth!</p>
+            <div class="difficulty-badge expert">Expert</div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🌍 The Final Battle</h2>
+            <p>Incredible work, cyber defender! You've made it to the alien mothership's core systems. This is it - the final challenge that will determine the fate of Earth!</p>
+            
+            <p>The alien mothership's mainframe is protected by multiple security layers. You'll need to use ALL the skills you've learned to breach their defenses and save our planet!</p>
+            
+            <div class="mothership-status">
+                <strong>🚨 MOTHERSHIP STATUS:</strong><br>
+                Systems Online: 100%<br>
+                Defense Grid: ACTIVE<br>
+                Invasion Countdown: <span id="countdown">05:00</span><br>
+                Earth's Fate: PENDING
+            </div>
+            
+            <div class="system-breach" id="system-breach">
+                <strong>🎉 SYSTEM BREACH SUCCESSFUL!</strong><br>
+                Mothership Systems: COMPROMISED<br>
+                Defense Grid: OFFLINE<br>
+                Invasion Status: CANCELLED<br>
+                Earth's Fate: SAVED! 🌍
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🔒 Multi-Layer Security Challenge</h2>
+            <p>Complete all security layers to access the mothership's core systems:</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <p style="text-align: center; margin-bottom: 2rem;">
+                <strong>Progress: <span id="progress-text">0/6 layers breached</span></strong>
+            </p>
+            
+            <div class="multi-challenge-grid">
+                <!-- Layer 1: HTML Inspection -->
+                <div class="mini-challenge" id="layer1">
+                    <h4>🔍 Layer 1: Source Code Analysis</h4>
+                    <p>Find the hidden access code in this HTML comment:</p>
+                    <!-- ACCESS_CODE: ALPHA-7 -->
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        &lt;!-- The access code is hidden in this comment --&gt;
+                    </div>
+                    <input type="text" class="challenge-input" id="layer1-input" placeholder="Enter access code">
+                    <button class="mini-submit" onclick="checkLayer(1)">Submit</button>
+                    <div class="mini-result" id="layer1-result"></div>
+                </div>
+                
+                <!-- Layer 2: Base64 Decoding -->
+                <div class="mini-challenge" id="layer2">
+                    <h4>🔐 Layer 2: Decode the Message</h4>
+                    <p>Decode this Base64 string:</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        QkVUQS05
+                    </div>
+                    <input type="text" class="challenge-input" id="layer2-input" placeholder="Enter decoded message">
+                    <button class="mini-submit" onclick="checkLayer(2)">Submit</button>
+                    <div class="mini-result" id="layer2-result"></div>
+                </div>
+                
+                <!-- Layer 3: SQL Injection -->
+                <div class="mini-challenge" id="layer3">
+                    <h4>💾 Layer 3: Database Bypass</h4>
+                    <p>Bypass this SQL authentication:</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        SELECT * FROM access WHERE code = '[INPUT]'
+                    </div>
+                    <input type="text" class="challenge-input" id="layer3-input" placeholder="Enter SQL injection payload">
+                    <button class="mini-submit" onclick="checkLayer(3)">Submit</button>
+                    <div class="mini-result" id="layer3-result"></div>
+                </div>
+                
+                <!-- Layer 4: Caesar Cipher -->
+                <div class="mini-challenge" id="layer4">
+                    <h4>🔤 Layer 4: Caesar Cipher</h4>
+                    <p>Decrypt this Caesar cipher (shift by 3):</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        JDPPD-4
+                    </div>
+                    <input type="text" class="challenge-input" id="layer4-input" placeholder="Enter decrypted message">
+                    <button class="mini-submit" onclick="checkLayer(4)">Submit</button>
+                    <div class="mini-result" id="layer4-result"></div>
+                </div>
+                
+                <!-- Layer 5: Reverse Engineering -->
+                <div class="mini-challenge" id="layer5">
+                    <h4>🔧 Layer 5: Reverse Engineering</h4>
+                    <p>This function generates the access code:</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        function getCode() {<br>
+                        &nbsp;&nbsp;return 'DELTA-' + (10-5);<br>
+                        }
+                    </div>
+                    <input type="text" class="challenge-input" id="layer5-input" placeholder="Enter function output">
+                    <button class="mini-submit" onclick="checkLayer(5)">Submit</button>
+                    <div class="mini-result" id="layer5-result"></div>
+                </div>
+                
+                <!-- Layer 6: Pattern Recognition -->
+                <div class="mini-challenge" id="layer6">
+                    <h4>🧩 Layer 6: Pattern Recognition</h4>
+                    <p>Find the next in the sequence:</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        ECHO-1, ECHO-2, ECHO-3, ECHO-?
+                    </div>
+                    <input type="text" class="challenge-input" id="layer6-input" placeholder="Enter the next code">
+                    <button class="mini-submit" onclick="checkLayer(6)">Submit</button>
+                    <div class="mini-result" id="layer6-result"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="final-sequence" id="final-sequence">
+            <h2>🎯 Final Access Sequence</h2>
+            <p>All security layers breached! Enter the final master code to save Earth:</p>
+            <div style="background: rgba(0,0,0,0.2); padding: 2rem; border-radius: 10px; margin: 2rem 0;">
+                <p style="font-size: 1.2rem; margin-bottom: 1rem;">Combine all layer codes in order:</p>
+                <p style="font-family: 'Courier New', monospace; font-size: 1.1rem;">
+                    ALPHA-7 + BETA-9 + GAMMA-1 + DELTA-5 + ECHO-4 = ?
+                </p>
+            </div>
+            <input type="text" class="challenge-input" id="final-input" placeholder="Enter the final master code" style="max-width: 400px; margin: 0 auto;">
+            <button class="mini-submit" onclick="checkFinalCode()" style="max-width: 200px;">🚀 SAVE EARTH!</button>
+            <div class="mini-result" id="final-result"></div>
+        </div>
+        
+        <div class="final-flag-display" id="final-flag-display">
+            <h2>🎉 EARTH IS SAVED! 🎉</h2>
+            <div style="font-size: 2rem; margin: 2rem 0;">🌍✨🛸💥</div>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">The alien invasion has been stopped! The mothership is retreating!</p>
+            <div style="background: rgba(0,0,0,0.3); padding: 2rem; border-radius: 10px; margin: 2rem 0;">
+                <h3>🏁 FINAL FLAG:</h3>
+                <div style="font-size: 1.5rem; font-family: 'Courier New', monospace; font-weight: bold; margin: 1rem 0;">
+                    FLAG{earth_is_saved}
+                </div>
+            </div>
+            <p>Congratulations, cyber defender! You've successfully completed the ultimate challenge!</p>
+        </div>
+        
+        <div class="challenge-content">
+            <div class="hint-box">
+                <h3>💡 Master Hints</h3>
+                <p>You'll need to use all the techniques you've learned:</p>
+                <ul>
+                    <li><strong>Layer 1:</strong> Check the HTML source code for comments</li>
+                    <li><strong>Layer 2:</strong> Use Base64 decoding (try online tools or browser console)</li>
+                    <li><strong>Layer 3:</strong> Use SQL injection: ' OR '1'='1</li>
+                    <li><strong>Layer 4:</strong> Caesar cipher - shift each letter back by 3</li>
+                    <li><strong>Layer 5:</strong> Execute the JavaScript function mentally</li>
+                    <li><strong>Layer 6:</strong> Follow the numerical pattern in the sequence</li>
+                </ul>
+            </div>
+            
+            <h2>📝 What You've Mastered</h2>
+            <p>This final challenge combines all the cybersecurity skills you've learned:</p>
+            <ul>
+                <li>HTML source code analysis and inspection</li>
+                <li>Base64 encoding and decoding</li>
+                <li>SQL injection techniques</li>
+                <li>Classical cryptography (Caesar cipher)</li>
+                <li>Reverse engineering and code analysis</li>
+                <li>Pattern recognition and logical thinking</li>
+                <li>Multi-layer security assessment</li>
+            </ul>
+            
+            <h2>🎓 Your Cybersecurity Journey</h2>
+            <p>You've successfully completed the Cyber Defense CTF! You now have foundational knowledge in:</p>
+            <ul>
+                <li>Web application security testing</li>
+                <li>Basic penetration testing techniques</li>
+                <li>Code analysis and reverse engineering</li>
+                <li>Cryptography and steganography</li>
+                <li>Database security and SQL injection</li>
+                <li>Digital forensics and investigation</li>
+            </ul>
+            
+            <p><strong>Next Steps:</strong> Consider exploring cybersecurity careers, bug bounty programs, or advanced CTF competitions!</p>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎮 Final Submission</h2>
+            <p>Once you've completed all layers and received the final flag, head back to the main game page and submit it in the flag submission form. Select "Final Alien Stronghold" from the dropdown and enter the flag to complete your mission!</p>
+            
+            <button class="btn btn-primary" onclick="window.close()">
+                🚀 Submit Final Flag
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let completedLayers = 0;
+        const totalLayers = 6;
+        const layerAnswers = {
+            1: 'ALPHA-7',
+            2: 'BETA-9',
+            3: 'GAMMA-1',
+            4: 'GAMMA-1',
+            5: 'DELTA-5',
+            6: 'ECHO-4'
+        };
+        
+        // Countdown timer
+        let countdownMinutes = 5;
+        let countdownSeconds = 0;
+        
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const timeString = `${countdownMinutes.toString().padStart(2, '0')}:${countdownSeconds.toString().padStart(2, '0')}`;
+            countdownElement.textContent = timeString;
+            
+            if (countdownMinutes === 0 && countdownSeconds === 0) {
+                countdownElement.style.color = '#e74c3c';
+                countdownElement.textContent = 'TIME UP!';
+                return;
+            }
+            
+            countdownSeconds--;
+            if (countdownSeconds < 0) {
+                countdownMinutes--;
+                countdownSeconds = 59;
+            }
+            
+            // Change color as time runs out
+            if (countdownMinutes < 2) {
+                countdownElement.style.color = '#e74c3c';
+            } else if (countdownMinutes < 3) {
+                countdownElement.style.color = '#f39c12';
+            }
+        }
+        
+        // Start countdown
+        setInterval(updateCountdown, 1000);
+        
+        function checkLayer(layerNum) {
+            const input = document.getElementById(`layer${layerNum}-input`);
+            const result = document.getElementById(`layer${layerNum}-result`);
+            const layer = document.getElementById(`layer${layerNum}`);
+            const userAnswer = input.value.trim().toLowerCase();
+            
+            let correctAnswer = '';
+            let isCorrect = false;
+            
+            switch(layerNum) {
+                case 1:
+                    // HTML comment: ALPHA-7
+                    correctAnswer = 'alpha-7';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+                case 2:
+                    // Base64: QkVUQS05 -> BETA-9
+                    correctAnswer = 'beta-9';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+                case 3:
+                    // SQL injection should return GAMMA-1
+                    correctAnswer = 'gamma-1';
+                    isCorrect = userAnswer === correctAnswer || userAnswer.includes("' or '1'='1") || userAnswer.includes("' or 1=1");
+                    if (userAnswer.includes("' or ")) {
+                        correctAnswer = 'gamma-1';
+                        isCorrect = true;
+                    }
+                    break;
+                case 4:
+                    // Caesar cipher: JDPPD-4 -> GAMMA-1 (shift back by 3)
+                    correctAnswer = 'gamma-1';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+                case 5:
+                    // JavaScript function: DELTA-5
+                    correctAnswer = 'delta-5';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+                case 6:
+                    // Pattern: ECHO-4
+                    correctAnswer = 'echo-4';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+            }
+            
+            if (isCorrect) {
+                result.textContent = '✅ Layer breached!';
+                result.className = 'mini-result success';
+                layer.classList.add('completed');
+                input.disabled = true;
+                document.querySelector(`#layer${layerNum} .mini-submit`).disabled = true;
+                
+                completedLayers++;
+                updateProgress();
+                
+                if (completedLayers === totalLayers) {
+                    setTimeout(() => {
+                        document.getElementById('final-sequence').style.display = 'block';
+                        document.getElementById('final-sequence').scrollIntoView({ behavior: 'smooth' });
+                    }, 1000);
+                }
+            } else {
+                result.textContent = '❌ Incorrect. Try again!';
+                result.className = 'mini-result error';
+                
+                // Provide specific hints
+                if (layerNum === 1) {
+                    result.textContent += ' (Hint: Check the HTML source code)';
+                } else if (layerNum === 2) {
+                    result.textContent += ' (Hint: Decode the Base64 string)';
+                } else if (layerNum === 3) {
+                    result.textContent += ' (Hint: Use SQL injection)';
+                } else if (layerNum === 4) {
+                    result.textContent += ' (Hint: Shift each letter back by 3)';
+                } else if (layerNum === 5) {
+                    result.textContent += ' (Hint: What does the function return?)';
+                } else if (layerNum === 6) {
+                    result.textContent += ' (Hint: Follow the number sequence)';
+                }
+            }
+        }
+        
+        function updateProgress() {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            const percentage = (completedLayers / totalLayers) * 100;
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = `${completedLayers}/${totalLayers} layers breached`;
+            
+            if (completedLayers === totalLayers) {
+                progressText.textContent = 'All layers breached! Access granted!';
+                progressFill.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+            }
+        }
+        
+        function checkFinalCode() {
+            const input = document.getElementById('final-input');
+            const result = document.getElementById('final-result');
+            const userAnswer = input.value.trim().toLowerCase();
+            
+            // The final code should be a combination or specific pattern
+            const correctAnswers = ['earth_is_saved', 'flag{earth_is_saved}', 'earthissaved'];
+            
+            if (correctAnswers.includes(userAnswer)) {
+                result.textContent = '🎉 EARTH IS SAVED!';
+                result.className = 'mini-result success';
+                
+                // Show final flag display
+                document.getElementById('final-flag-display').style.display = 'block';
+                document.getElementById('system-breach').style.display = 'block';
+                
+                // Add celebration effects
+                createCelebration();
+                
+                // Scroll to final flag
+                setTimeout(() => {
+                    document.getElementById('final-flag-display').scrollIntoView({ behavior: 'smooth' });
+                }, 1000);
+                
+            } else {
+                result.textContent = '❌ Incorrect master code. Review all layer codes!';
+                result.className = 'mini-result error';
+            }
+        }
+        
+        function createCelebration() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const celebration = document.createElement('div');
+                    celebration.textContent = ['🎉', '🎊', '✨', '🌟', '🎆'][Math.floor(Math.random() * 5)];
+                    celebration.style.cssText = `
+                        position: fixed;
+                        font-size: 2rem;
+                        z-index: 1000;
+                        pointer-events: none;
+                        animation: celebrate 3s ease-out forwards;
+                        left: ${Math.random() * 100}%;
+                        top: ${Math.random() * 100}%;
+                    `;
+                    
+                    document.body.appendChild(celebration);
+                    
+                    setTimeout(() => celebration.remove(), 3000);
+                }, i * 100);
+            }
+            
+            // Add celebration animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes celebrate {
+                    0% { transform: scale(0) rotate(0deg); opacity: 1; }
+                    50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+                    100% { transform: scale(0) rotate(360deg); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Add some dynamic hints
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight layer 1 hint
+            setTimeout(() => {
+                const layer1 = document.getElementById('layer1');
+                layer1.style.animation = 'pulse 2s ease-in-out 3';
+            }, 3000);
+            
+            // Add pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.02); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+        
+        // Auto-fill hints for testing (remove in production)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F1') {
+                e.preventDefault();
+                document.getElementById('layer1-input').value = 'ALPHA-7';
+                document.getElementById('layer2-input').value = 'BETA-9';
+                document.getElementById('layer3-input').value = 'GAMMA-1';
+                document.getElementById('layer4-input').value = 'GAMMA-1';
+                document.getElementById('layer5-input').value = 'DELTA-5';
+                document.getElementById('layer6-input').value = 'ECHO-4';
+                console.log('Debug: Auto-filled all answers');
+            }
+        });
+    </script>
+</body>
+</html>

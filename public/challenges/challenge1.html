@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Briefing - Cyber Defense CTF</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .challenge-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .challenge-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .challenge-content {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .alien-database {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #00ff00;
+            padding: 2rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #00ff00;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .alien-database::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 98px,
+                rgba(0, 255, 0, 0.1) 100px
+            );
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .terminal-text {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .hint-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+        
+        .flag-hint {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="challenge-container">
+        <button class="btn btn-secondary back-button" onclick="window.close()">
+            ← Back to Game
+        </button>
+        
+        <div class="challenge-header">
+            <h1>🛸 Mission Briefing</h1>
+            <p>Welcome to the Cyber Defense Force!</p>
+            <div class="difficulty-badge beginner">Beginner</div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎯 Your Mission</h2>
+            <p>Welcome, young cyber defender! The aliens have invaded Earth and are using our own technology against us. Their first move was to infiltrate our computer systems and hide secret codes.</p>
+            
+            <p>Your mission is to find the hidden flag in their database system below. Use your web inspection skills to uncover their secrets!</p>
+            
+            <div class="hint-box">
+                <h3>💡 Hint</h3>
+                <p>The aliens might have hidden their flag in the HTML source code. Try right-clicking on the alien database and selecting "View Page Source" or "Inspect Element". You can also press F12 to open the developer tools!</p>
+            </div>
+            
+            <h2>🖥️ Alien Database Terminal</h2>
+            <div class="alien-database">
+                <div class="terminal-text">
+                    <p>ALIEN MAINFRAME SYSTEM v2.1</p>
+                    <p>============================</p>
+                    <p>Access Level: RESTRICTED</p>
+                    <p>Scanning for human intrusion...</p>
+                    <p>STATUS: SECURE</p>
+                    <p></p>
+                    <p>Hidden files detected: 1</p>
+                    <p>Classification: TOP SECRET</p>
+                    <p>Content: FLAG{welcome_to_cyber_defense}</p>
+                    <p></p>
+                    <p>System processes running...</p>
+                    <p>Alien.exe - ACTIVE</p>
+                    <p>Defense.exe - ACTIVE</p>
+                    <p>Invasion.exe - STANDBY</p>
+                    <p></p>
+                    <p>> <span class="blink">_</span></p>
+                </div>
+            </div>
+            
+            <div class="flag-hint">
+                <h3>🏁 Flag Format</h3>
+                <p>All flags in this CTF follow the format: <strong>FLAG{something_here}</strong></p>
+                <p>Once you find the flag, go back to the main game page and submit it!</p>
+            </div>
+            
+            <h2>📝 What You've Learned</h2>
+            <ul>
+                <li>How to inspect HTML source code</li>
+                <li>Using browser developer tools (F12)</li>
+                <li>Finding hidden information in web pages</li>
+                <li>The importance of checking source code during security testing</li>
+            </ul>
+            
+            <h2>🔐 Real-World Application</h2>
+            <p>In the real world, web developers sometimes accidentally leave sensitive information in HTML comments or source code. Ethical hackers and security researchers use these techniques to find vulnerabilities and report them to help make websites safer.</p>
+            
+            <p><strong>Remember:</strong> Only use these skills for good! Always get permission before testing security on systems you don't own.</p>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎮 Next Steps</h2>
+            <p>Once you've found the flag, head back to the main game page and submit it in the flag submission form. Select "Mission Briefing" from the dropdown and enter the flag you found!</p>
+            
+            <button class="btn btn-primary" onclick="window.close()">
+                🚀 Submit Flag on Main Page
+            </button>
+        </div>
+    </div>
+</body>
+</html>

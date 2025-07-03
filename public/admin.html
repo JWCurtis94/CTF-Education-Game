@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .admin-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-card {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .admin-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .team-details {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .team-details h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-bar {
+            background: var(--border-color);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), var(--accent-color));
+            transition: width 0.3s ease;
+        }
+        
+        .danger-zone {
+            border: 2px solid var(--error-color);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        
+        .danger-zone h3 {
+            color: var(--error-color);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .challenge-management {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .challenge-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .challenge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .challenge-info {
+            flex: 1;
+        }
+        
+        .challenge-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .activity-log {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .log-time {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+        
+        .back-to-game {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="btn btn-secondary back-to-game" onclick="window.location.href='/'">
+            🏠 Back to Game
+        </button>
+        
+        <header class="admin-header">
+            <h1>🛡️ CTF Admin Panel</h1>
+            <p>Monitor and manage the Cyber Defense CTF game</p>
+        </header>
+
+        <!-- Game Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-teams">0</div>
+                <div class="stat-label">Teams Registered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-flags">0</div>
+                <div class="stat-label">Flags Captured</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="active-players">0</div>
+                <div class="stat-label">Active Players</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="game-time">00:00</div>
+                <div class="stat-label">Game Time</div>
+            </div>
+        </div>
+
+        <!-- Admin Controls -->
+        <div class="admin-controls">
+            <div class="admin-card">
+                <h3>🎮 Game Control</h3>
+                <button id="start-game" class="btn btn-success" style="width: 100%; margin-bottom: 1rem;">
+                    🚀 Start Game
+                </button>
+                <button id="pause-game" class="btn btn-warning" style="width: 100%; margin-bottom: 1rem;">
+                    ⏸️ Pause Game
+                </button>
+                <button id="export-data" class="btn btn-primary" style="width: 100%;">
+                    📊 Export Results
+                </button>
+            </div>
+            
+            <div class="admin-card">
+                <h3>👥 Team Management</h3>
+                <div id="team-count">Loading team data...</div>
+                <button id="refresh-teams" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">
+                    🔄 Refresh Teams
+                </button>
+            </div>
+            
+            <div class="admin-card danger-zone">
+                <h3>⚠️ Danger Zone</h3>
+                <p>These actions cannot be undone!</p>
+                <button id="reset-game" class="btn btn-danger" style="width: 100%; margin-top: 1rem;">
+                    🔄 Reset Entire Game
+                </button>
+            </div>
+        </div>
+
+        <!-- Team Details -->
+        <div class="section">
+            <h2>👥 Team Progress</h2>
+            <div id="team-details">
+                <div class="no-teams">No teams registered yet</div>
+            </div>
+        </div>
+
+        <!-- Challenge Management -->
+        <div class="challenge-management">
+            <h2>🎯 Challenge Status</h2>
+            <div id="challenge-list" class="challenge-list">
+                <!-- Challenges will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="activity-log">
+            <h2>📋 Activity Log</h2>
+            <div id="activity-log">
+                <div class="log-entry">
+                    <div class="log-time">System startup</div>
+                    <div>Admin panel initialized</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = null;
+        let teams = {};
+        let challenges = [];
+        let gameStartTime = null;
+        let activityLog = [];
+
+        // Initialize admin panel
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAdmin();
+            setupEventListeners();
+            setupSocketConnection();
+            loadData();
+        });
+
+        function initializeAdmin() {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('ctf-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Initialize activity log
+            addLogEntry('Admin panel loaded');
+        }
+
+        function setupEventListeners() {
+            document.getElementById('start-game').addEventListener('click', startGame);
+            document.getElementById('pause-game').addEventListener('click', pauseGame);
+            document.getElementById('reset-game').addEventListener('click', resetGame);
+            document.getElementById('export-data').addEventListener('click', exportData);
+            document.getElementById('refresh-teams').addEventListener('click', loadData);
+        }
+
+        function setupSocketConnection() {
+            socket = io();
+            
+            socket.on('teams-updated', function(updatedTeams) {
+                teams = updatedTeams;
+                updateTeamDetails();
+                updateStats();
+                addLogEntry('Teams data updated');
+            });
+            
+            socket.on('flag-captured', function(data) {
+                addLogEntry(`🏁 ${data.teamName} captured flag for "${data.title}" (+${data.points} points)`);
+                updateStats();
+            });
+            
+            socket.on('game-reset', function() {
+                addLogEntry('🔄 Game reset by admin');
+                setTimeout(() => location.reload(), 1000);
+            });
+            
+            socket.on('game-started', function() {
+                addLogEntry('🚀 Game started');
+                gameStartTime = new Date();
+                updateStats();
+            });
+        }
+
+        async function loadData() {
+            try {
+                // Load teams
+                const teamsResponse = await fetch('/api/teams');
+                teams = await teamsResponse.json();
+                
+                // Load challenges
+                const challengesResponse = await fetch('/api/challenges');
+                challenges = await challengesResponse.json();
+                
+                updateTeamDetails();
+                updateChallengeList();
+                updateStats();
+                
+                addLogEntry('Data refreshed');
+            } catch (error) {
+                console.error('Error loading data:', error);
+                addLogEntry('Error loading data: ' + error.message);
+            }
+        }
+
+        function updateStats() {
+            const teamCount = Object.keys(teams).length;
+            const totalFlags = Object.values(teams).reduce((sum, team) => sum + team.solvedChallenges.length, 0);
+            const activePlayerCount = Object.values(teams).reduce((sum, team) => sum + team.members.length, 0);
+            
+            document.getElementById('total-teams').textContent = teamCount;
+            document.getElementById('total-flags').textContent = totalFlags;
+            document.getElementById('active-players').textContent = activePlayerCount;
+            
+            // Update game time
+            if (gameStartTime) {
+                const elapsed = Math.floor((new Date() - gameStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('game-time').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function updateTeamDetails() {
+            const container = document.getElementById('team-details');
+            
+            if (Object.keys(teams).length === 0) {
+                container.innerHTML = '<div class="no-teams">No teams registered yet</div>';
+                return;
+            }
+            
+            const teamArray = Object.values(teams).sort((a, b) => b.score - a.score);
+            
+            container.innerHTML = teamArray.map(team => {
+                const progress = (team.solvedChallenges.length / challenges.length) * 100;
+                
+                return `
+                    <div class="team-details">
+                        <h4>${team.name}</h4>
+                        <div class="team-stats">
+                            <div><strong>Score:</strong> ${team.score} points</div>
+                            <div><strong>Challenges:</strong> ${team.solvedChallenges.length}/${challenges.length}</div>
+                            <div><strong>Members:</strong> ${team.members.join(', ') || 'None listed'}</div>
+                            <div><strong>Joined:</strong> ${new Date(team.joinTime).toLocaleString()}</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('team-count').innerHTML = `
+                <strong>${Object.keys(teams).length} teams registered</strong><br>
+                <small>Total players: ${Object.values(teams).reduce((sum, team) => sum + team.members.length, 0)}</small>
+            `;
+        }
+
+        function updateChallengeList() {
+            const container = document.getElementById('challenge-list');
+            
+            container.innerHTML = challenges.map(challenge => {
+                const solvedByTeams = Object.values(teams).filter(team => 
+                    team.solvedChallenges.includes(challenge.id)
+                ).length;
+                
+                const totalTeams = Object.keys(teams).length;
+                const solveRate = totalTeams > 0 ? ((solvedByTeams / totalTeams) * 100).toFixed(1) : 0;
+                
+                return `
+                    <div class="challenge-item">
+                        <div class="challenge-info">
+                            <strong>${challenge.title}</strong>
+                            <div class="challenge-stats">
+                                <span>Difficulty: ${challenge.difficulty}</span>
+                                <span>Points: ${challenge.points}</span>
+                                <span>Solved: ${solvedByTeams}/${totalTeams} teams (${solveRate}%)</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function startGame() {
+            try {
+                const response = await fetch('/api/admin/start-game', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    addLogEntry('🚀 Game started by admin');
+                    gameStartTime = new Date();
+                    updateStats();
+                } else {
+                    addLogEntry('❌ Failed to start game');
+                }
+            } catch (error) {
+                console.error('Error starting game:', error);
+                addLogEntry('❌ Error starting game: ' + error.message);
+            }
+        }
+
+        async function pauseGame() {
+            addLogEntry('⏸️ Game paused by admin');
+        }
+
+        async function resetGame() {
+            if (!confirm('Are you sure you want to reset the entire game? This will delete all teams and progress!')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/reset', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    addLogEntry('🔄 Game reset by admin');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    addLogEntry('❌ Failed to reset game');
+                }
+            } catch (error) {
+                console.error('Error resetting game:', error);
+                addLogEntry('❌ Error resetting game: ' + error.message);
+            }
+        }
+
+        function exportData() {
+            const data = {
+                teams,
+                challenges,
+                gameStartTime,
+                exportTime: new Date().toISOString(),
+                activityLog
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ctf-results-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            addLogEntry('📊 Game data exported');
+        }
+
+        function addLogEntry(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            activityLog.unshift({ time: timestamp, message });
+            
+            const logContainer = document.getElementById('activity-log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <div class="log-time">${timestamp}</div>
+                <div>${message}</div>
+            `;
+            
+            logContainer.insertBefore(entry, logContainer.firstChild);
+            
+            // Keep only last 50 entries
+            while (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        // Update game time every second
+        setInterval(updateStats, 1000);
+        
+        // Auto-refresh data every 10 seconds
+        setInterval(loadData, 10000);
+    </script>
+</body>
+</html>
