@@ -1,6 +1,6 @@
 # Educational CTF Game for Students
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/YOUR_USERNAME/student-ctf-game)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/JWCurtis94/CTF-Education-Game)
 
 ## 🎮 About This Game
 
@@ -31,8 +31,8 @@ This is a comprehensive web-based Capture The Flag (CTF) game designed specifica
 
 2. **Installation:**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/student-ctf-game.git
-   cd student-ctf-game
+   git clone https://github.com/JWCurtis94/CTF-Education-Game.git
+   cd CTF-Education-Game
    npm install
    ```
 
