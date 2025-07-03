@@ -1,6 +1,9 @@
 # Use the official Node.js image
 FROM node:18-alpine
 
+# Install Git and other necessary tools
+RUN apk add --no-cache git bash curl
+
 # Set the working directory
 WORKDIR /workspace
 
