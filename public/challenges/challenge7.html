@@ -293,6 +293,68 @@
             opacity: 0.8;
         }
         
+        .quiz-timer {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 2px solid rgba(255, 193, 7, 0.5);
+        }
+        
+        .timer-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timer-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .timer-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .timer-countdown {
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #ffd700;
+            margin-left: 0.5rem;
+        }
+        
+        .timer-countdown.warning {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+        
+        .timer-countdown.danger {
+            color: #dc3545;
+            animation: pulse 0.5s infinite;
+        }
+        
+        .timer-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .timer-progress {
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            height: 100%;
+            width: 100%;
+            transition: width 1s linear;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
         .quiz-rules {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
@@ -483,6 +545,11 @@
         
         .answer-review.incorrect {
             border-left-color: #dc3545;
+        }
+        
+        .answer-review.unanswered {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
         }
         
         .review-question {
@@ -689,6 +756,16 @@
             <div class="quiz-header">
                 <h2>🧠 Final Knowledge Quiz</h2>
                 <p>Before claiming your final flag, demonstrate your understanding of ethical hacking and the challenges you've completed!</p>
+                <div class="quiz-timer" id="quiz-timer" style="display: none;">
+                    <div class="timer-display">
+                        <span class="timer-icon">⏰</span>
+                        <span class="timer-text">Time Remaining: </span>
+                        <span class="timer-countdown" id="timer-countdown">10:00</span>
+                    </div>
+                    <div class="timer-bar">
+                        <div class="timer-progress" id="timer-progress"></div>
+                    </div>
+                </div>
                 <div class="quiz-progress-container">
                     <div class="quiz-progress-bar">
                         <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
@@ -702,10 +779,12 @@
                     <div class="quiz-rules">
                         <h3>📋 Quiz Rules</h3>
                         <ul>
-                            <li>10 questions covering all challenges + ethical hacking principles</li>
-                            <li>You need 70% (7/10) to pass and get your final flag</li>
+                            <li>18 questions covering all challenges + ethical hacking principles</li>
+                            <li>⏰ <strong>10 minutes</strong> time limit - answer efficiently but thoughtfully</li>
+                            <li>You need 70% (13/18) to pass and get your final flag</li>
                             <li>Questions cover what you learned in each challenge</li>
                             <li>Focus on ethical hacking principles and responsible disclosure</li>
+                            <li>Timer starts when you begin the quiz</li>
                             <li>You can retake the quiz if needed</li>
                         </ul>
                         <button class="quiz-btn start" onclick="startQuiz()">🚀 Start Quiz</button>
@@ -993,10 +1072,10 @@
                 challenge: "JavaScript Analysis"
             },
             {
-                question: "Which ethical hacking principle means 'do no harm'?",
-                options: ["Legal Authorization", "Minimize Impact", "Responsible Disclosure", "Scope Definition"],
+                question: "In Challenge 6, what type of file contained the hidden message?",
+                options: ["Text file", "Image file", "Audio file", "Video file"],
                 correct: 1,
-                challenge: "Ethics"
+                challenge: "Steganography"
             },
             {
                 question: "What should you ALWAYS do before testing security on a system?",
@@ -1005,10 +1084,10 @@
                 challenge: "Ethics"
             },
             {
-                question: "In Challenge 6, what type of file contained the hidden message?",
-                options: ["Text file", "Image file", "Audio file", "Video file"],
+                question: "Which ethical hacking principle means 'do no harm'?",
+                options: ["Legal Authorization", "Minimize Impact", "Responsible Disclosure", "Scope Definition"],
                 correct: 1,
-                challenge: "Steganography"
+                challenge: "Ethics"
             },
             {
                 question: "What is the main difference between ethical hackers and malicious hackers?",
@@ -1021,16 +1100,73 @@
                 options: ["Post it online", "Report to the owner", "Exploit it further", "Ignore it"],
                 correct: 1,
                 challenge: "Ethics"
+            },
+            {
+                question: "What does 'responsible disclosure' mean in ethical hacking?",
+                options: ["Telling everyone about the vulnerability", "Reporting privately to the organization first", "Selling the vulnerability information", "Keeping it secret forever"],
+                correct: 1,
+                challenge: "Ethics"
+            },
+            {
+                question: "When is it legal to hack into a computer system?",
+                options: ["When you're curious about security", "When you have explicit written permission", "When the system seems poorly protected", "When you're just checking for vulnerabilities"],
+                correct: 1,
+                challenge: "Ethics"
+            },
+            {
+                question: "What should ethical hackers do with any data they find during testing?",
+                options: ["Share it with friends", "Keep it for personal use", "Protect it and report its existence", "Delete it immediately"],
+                correct: 2,
+                challenge: "Ethics"
+            },
+            {
+                question: "Which of these is NOT an ethical hacking principle?",
+                options: ["Get proper authorization", "Minimize system impact", "Exploit for personal gain", "Document findings responsibly"],
+                correct: 2,
+                challenge: "Ethics"
+            },
+            {
+                question: "What is a 'bug bounty' program?",
+                options: ["A game for finding insects", "A legal way to report vulnerabilities for rewards", "A hacking competition", "A type of malware"],
+                correct: 1,
+                challenge: "Ethics"
+            },
+            {
+                question: "If you accidentally access sensitive data during ethical testing, what should you do?",
+                options: ["Document everything you found", "Stop immediately and report the access", "Continue testing to find more", "Take screenshots for evidence"],
+                correct: 1,
+                challenge: "Ethics"
+            },
+            {
+                question: "What does 'scope' mean in ethical hacking?",
+                options: ["The difficulty of the hack", "The boundaries of what you're allowed to test", "The tools you can use", "The time limit for testing"],
+                correct: 1,
+                challenge: "Ethics"
+            },
+            {
+                question: "Why is it important to have written permission before security testing?",
+                options: ["To make it look professional", "To avoid legal consequences", "To get better results", "To impress the client"],
+                correct: 1,
+                challenge: "Ethics"
             }
         ];
         
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
         let userAnswers = [];
+        let quizTimer;
+        let timeRemaining = 600; // 10 minutes in seconds
+        let quizStartTime;
         
         function startQuiz() {
             document.getElementById('quiz-intro').style.display = 'none';
             document.getElementById('quiz-questions').style.display = 'block';
+            document.getElementById('quiz-timer').style.display = 'block';
+            
+            // Start the timer
+            quizStartTime = Date.now();
+            startTimer();
+            
             showQuestion();
         }
         
@@ -1102,10 +1238,14 @@
         }
         
         function showResults() {
+            // Stop the timer
+            stopTimer();
+            
             const percentage = Math.round((correctAnswers / quizQuestions.length) * 100);
             const passed = percentage >= 70; // Need 70% to pass
             
             document.getElementById('quiz-questions').style.display = 'none';
+            document.getElementById('quiz-timer').style.display = 'none';
             document.getElementById('quiz-results').style.display = 'block';
             
             const resultsContainer = document.getElementById('quiz-results-content');
@@ -1127,12 +1267,25 @@
                     ${quizQuestions.map((q, index) => {
                         const userAnswer = userAnswers[index];
                         const isCorrect = userAnswer === q.correct;
+                        const wasAnswered = userAnswer !== -1 && userAnswer !== undefined;
+                        
+                        let reviewClass = 'incorrect';
+                        if (!wasAnswered) {
+                            reviewClass = 'unanswered';
+                        } else if (isCorrect) {
+                            reviewClass = 'correct';
+                        }
+                        
                         return `
-                            <div class="answer-review ${isCorrect ? 'correct' : 'incorrect'}">
+                            <div class="answer-review ${reviewClass}">
                                 <div class="review-question">${index + 1}. ${q.question}</div>
                                 <div class="review-answer">
-                                    Your answer: ${q.options[userAnswer]} ${isCorrect ? '✓' : '✗'}
-                                    ${!isCorrect ? `<br>Correct answer: ${q.options[q.correct]}` : ''}
+                                    ${!wasAnswered ? 
+                                        'No answer given ⏰' : 
+                                        `Your answer: ${q.options[userAnswer]} ${isCorrect ? '✓' : '✗'}`
+                                    }
+                                    ${wasAnswered && !isCorrect ? `<br>Correct answer: ${q.options[q.correct]}` : ''}
+                                    ${!wasAnswered ? `<br>Correct answer: ${q.options[q.correct]}` : ''}
                                 </div>
                             </div>
                         `;
@@ -1151,11 +1304,16 @@
         }
         
         function retryQuiz() {
+            // Reset timer
+            stopTimer();
+            timeRemaining = 600; // Reset to 10 minutes
+            
             currentQuestionIndex = 0;
             correctAnswers = 0;
             userAnswers = [];
             
             document.getElementById('quiz-results').style.display = 'none';
+            document.getElementById('quiz-timer').style.display = 'none';
             document.getElementById('quiz-intro').style.display = 'block';
         }
         
@@ -1233,6 +1391,61 @@
                 console.log('Debug: Auto-filled all answers');
             }
         });
+        
+        // Timer Functions
+        function startTimer() {
+            quizTimer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(quizTimer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const timeDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const countdownElement = document.getElementById('timer-countdown');
+            const progressElement = document.getElementById('timer-progress');
+            
+            countdownElement.textContent = timeDisplay;
+            
+            // Update progress bar (decreasing width as time runs out)
+            const progressPercentage = (timeRemaining / 600) * 100;
+            progressElement.style.width = progressPercentage + '%';
+            
+            // Add warning colors
+            if (timeRemaining <= 60) {
+                countdownElement.className = 'timer-countdown danger';
+            } else if (timeRemaining <= 180) {
+                countdownElement.className = 'timer-countdown warning';
+            } else {
+                countdownElement.className = 'timer-countdown';
+            }
+        }
+        
+        function timeUp() {
+            alert('⏰ Time is up! The quiz will be auto-submitted with your current answers.');
+            
+            // Fill remaining answers as unanswered
+            while (userAnswers.length < quizQuestions.length) {
+                userAnswers.push(-1); // -1 indicates no answer
+            }
+            
+            showResults();
+        }
+        
+        function stopTimer() {
+            if (quizTimer) {
+                clearInterval(quizTimer);
+                quizTimer = null;
+            }
+        }
     </script>
 </body>
 </html>
