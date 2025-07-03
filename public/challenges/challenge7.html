@@ -635,7 +635,7 @@
                 <strong>🚨 MOTHERSHIP STATUS:</strong><br>
                 Systems Online: 100%<br>
                 Defense Grid: ACTIVE<br>
-                Invasion Countdown: <span id="countdown">05:00</span><br>
+                Invasion Countdown: <span id="countdown">15:00</span><br>
                 Earth's Fate: PENDING
             </div>
             
@@ -779,11 +779,11 @@
                     <div class="quiz-rules">
                         <h3>📋 Quiz Rules</h3>
                         <ul>
-                            <li>18 questions covering all challenges + ethical hacking principles</li>
+                            <li>26 questions covering all challenges + ethical hacking principles</li>
                             <li>⏰ <strong>10 minutes</strong> time limit - answer efficiently but thoughtfully</li>
-                            <li>You need 70% (13/18) to pass and get your final flag</li>
+                            <li>You need 70% (19/26) to pass and get your final flag</li>
                             <li>Questions cover what you learned in each challenge</li>
-                            <li>Focus on ethical hacking principles and responsible disclosure</li>
+                            <li>Strong focus on ethical hacking principles and why illegal hacking is wrong</li>
                             <li>Timer starts when you begin the quiz</li>
                             <li>You can retake the quiz if needed</li>
                         </ul>
@@ -880,8 +880,8 @@
             6: 'ECHO-4'
         };
         
-        // Countdown timer
-        let countdownMinutes = 5;
+        // Countdown timer for invasion narrative (15 minutes - longer than quiz)
+        let countdownMinutes = 15;
         let countdownSeconds = 0;
         
         function updateCountdown() {
@@ -902,9 +902,9 @@
             }
             
             // Change color as time runs out
-            if (countdownMinutes < 2) {
+            if (countdownMinutes < 3) {
                 countdownElement.style.color = '#e74c3c';
-            } else if (countdownMinutes < 3) {
+            } else if (countdownMinutes < 5) {
                 countdownElement.style.color = '#f39c12';
             }
         }
@@ -1081,73 +1081,121 @@
                 question: "What should you ALWAYS do before testing security on a system?",
                 options: ["Check if it's vulnerable", "Get written permission", "Use anonymous tools", "Start with simple tests"],
                 correct: 1,
-                challenge: "Ethics"
+                challenge: "Ethics & Law"
             },
             {
-                question: "Which ethical hacking principle means 'do no harm'?",
-                options: ["Legal Authorization", "Minimize Impact", "Responsible Disclosure", "Scope Definition"],
+                question: "Why should you NEVER use hacking skills for illegal activities?",
+                options: ["It's too difficult", "It could result in jail time and criminal charges", "It doesn't pay well", "It's boring"],
                 correct: 1,
-                challenge: "Ethics"
+                challenge: "Ethics & Law"
             },
             {
-                question: "What is the main difference between ethical hackers and malicious hackers?",
-                options: ["Technical skills", "Tools used", "Intent and permission", "Target selection"],
+                question: "What are the potential consequences of illegal hacking?",
+                options: ["A warning from authorities", "Criminal charges, prison time, and massive fines", "A slap on the wrist", "Nothing serious"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "Which of these activities is ILLEGAL and should never be done?",
+                options: ["Ethical penetration testing with permission", "Participating in legal CTF competitions", "Hacking into someone else's computer without permission", "Learning about cybersecurity"],
                 correct: 2,
-                challenge: "Ethics"
-            },
-            {
-                question: "If you discover a security vulnerability, what should you do first?",
-                options: ["Post it online", "Report to the owner", "Exploit it further", "Ignore it"],
-                correct: 1,
-                challenge: "Ethics"
+                challenge: "Ethics & Law"
             },
             {
                 question: "What does 'responsible disclosure' mean in ethical hacking?",
                 options: ["Telling everyone about the vulnerability", "Reporting privately to the organization first", "Selling the vulnerability information", "Keeping it secret forever"],
                 correct: 1,
-                challenge: "Ethics"
+                challenge: "Ethics & Law"
             },
             {
                 question: "When is it legal to hack into a computer system?",
                 options: ["When you're curious about security", "When you have explicit written permission", "When the system seems poorly protected", "When you're just checking for vulnerabilities"],
                 correct: 1,
-                challenge: "Ethics"
+                challenge: "Ethics & Law"
             },
             {
                 question: "What should ethical hackers do with any data they find during testing?",
                 options: ["Share it with friends", "Keep it for personal use", "Protect it and report its existence", "Delete it immediately"],
                 correct: 2,
-                challenge: "Ethics"
+                challenge: "Ethics & Law"
             },
             {
-                question: "Which of these is NOT an ethical hacking principle?",
-                options: ["Get proper authorization", "Minimize system impact", "Exploit for personal gain", "Document findings responsibly"],
-                correct: 2,
-                challenge: "Ethics"
+                question: "Which statement about illegal hacking is TRUE?",
+                options: ["It's okay if you don't get caught", "It can destroy lives and careers", "It's just a harmless prank", "Everyone does it anyway"],
+                correct: 1,
+                challenge: "Ethics & Law"
             },
             {
                 question: "What is a 'bug bounty' program?",
                 options: ["A game for finding insects", "A legal way to report vulnerabilities for rewards", "A hacking competition", "A type of malware"],
                 correct: 1,
-                challenge: "Ethics"
+                challenge: "Ethics & Law"
             },
             {
-                question: "If you accidentally access sensitive data during ethical testing, what should you do?",
-                options: ["Document everything you found", "Stop immediately and report the access", "Continue testing to find more", "Take screenshots for evidence"],
-                correct: 1,
-                challenge: "Ethics"
+                question: "If someone asks you to hack into their ex's social media, what should you do?",
+                options: ["Help them if they pay you", "Do it but don't tell anyone", "Refuse - this is illegal and harmful", "Only do it if it's easy"],
+                correct: 2,
+                challenge: "Ethics & Law"
             },
             {
                 question: "What does 'scope' mean in ethical hacking?",
                 options: ["The difficulty of the hack", "The boundaries of what you're allowed to test", "The tools you can use", "The time limit for testing"],
                 correct: 1,
-                challenge: "Ethics"
+                challenge: "Ethics & Law"
             },
             {
                 question: "Why is it important to have written permission before security testing?",
-                options: ["To make it look professional", "To avoid legal consequences", "To get better results", "To impress the client"],
+                options: ["To make it look professional", "To avoid legal consequences and ensure it's ethical", "To get better results", "To impress the client"],
                 correct: 1,
-                challenge: "Ethics"
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "What should you do if you accidentally discover a vulnerability in a system you don't own?",
+                options: ["Exploit it for personal gain", "Tell your friends about it", "Report it responsibly to the owner", "Ignore it completely"],
+                correct: 2,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "Which career path uses hacking skills LEGALLY and ethically?",
+                options: ["Cybercriminal", "Penetration tester/Ethical hacker", "Identity thief", "Data broker"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "What are the potential consequences of illegal hacking?",
+                options: ["Just a small fine", "Prison time, huge fines, and criminal record", "A warning from authorities", "Nothing if you're under 18"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "Why should you NEVER use hacking skills for illegal activities?",
+                options: ["Because it's hard to do", "Because it destroys trust, harms others, and ruins your future", "Because you might not succeed", "Because it's boring"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "What is the difference between a white hat and black hat hacker?",
+                options: ["The tools they use", "White hat hackers work legally with permission, black hat hackers commit crimes", "The difficulty of their hacks", "The time they spend hacking"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "If you want to test your hacking skills, what should you do?",
+                options: ["Find random websites to practice on", "Use legal platforms like HackTheBox or TryHackMe", "Test on your school's network", "Practice on your neighbors' WiFi"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "What can illegal hacking do to innocent people?",
+                options: ["Nothing - it only affects big companies", "Steal their identity, money, and personal information", "Just inconvenience them slightly", "Make them more security-aware"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "Why is revenge hacking (hacking someone who upset you) wrong?",
+                options: ["It's too difficult to do", "It's illegal, harmful, and makes you the criminal", "It doesn't work very well", "It takes too much time"],
+                correct: 1,
+                challenge: "Ethics & Law"
             }
         ];
         
