@@ -10,6 +10,7 @@ tasks:
   - name: Install dependencies and start server
     init: |
       npm install
+      mkdir -p data
       echo "🎮 Educational CTF Game Setup Complete!"
       echo "🚀 The game will start automatically"
       echo "🌐 Access the game at: https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"

@@ -1,33 +1,8 @@
-# Use the official Node.js image
-FROM node:18-alpine
+# Use the official Gitpod workspace image which has all the tools we need
+FROM gitpod/workspace-node:latest
 
-# Install Git and other necessary tools
-RUN apk add --no-cache git bash curl
-
-# Set the working directory
-WORKDIR /workspace
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application
-COPY . .
-
-# Create data directory
-RUN mkdir -p data
+# Install any additional global packages we might need
+RUN npm install -g nodemon
 
 # Expose the port
 EXPOSE 3000
-
-# Set environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
-
-# Install nodemon for development
-RUN npm install -g nodemon
-
-# Command to run the application
-CMD ["npm", "start"]
