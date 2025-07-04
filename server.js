@@ -145,6 +145,53 @@ app.get('/challenge/:id', (req, res) => {
     return res.status(404).send('Challenge not found');
   }
   
+  // Check if challenge is locked (for challenges 2 and above)
+  if (challengeId > 1) {
+    const teamName = req.query.team; // Team name should be passed as query parameter
+    
+    if (!teamName) {
+      return res.status(403).send(`
+        <html>
+          <head><title>Challenge Locked</title></head>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h1>🔒 Challenge Locked</h1>
+            <p>Please register your team first and access challenges through the main game page.</p>
+            <a href="/" style="color: #007bff; text-decoration: none;">← Back to Game</a>
+          </body>
+        </html>
+      `);
+    }
+    
+    const team = gameState.teams.find(t => t.name === teamName);
+    if (!team) {
+      return res.status(403).send(`
+        <html>
+          <head><title>Team Not Found</title></head>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h1>❌ Team Not Found</h1>
+            <p>Team "${teamName}" is not registered.</p>
+            <a href="/" style="color: #007bff; text-decoration: none;">← Back to Game</a>
+          </body>
+        </html>
+      `);
+    }
+    
+    // Check if previous challenge is solved
+    const previousChallengeId = challengeId - 1;
+    if (!team.solvedChallenges.includes(previousChallengeId)) {
+      return res.status(403).send(`
+        <html>
+          <head><title>Challenge Locked</title></head>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h1>🔒 Challenge Locked</h1>
+            <p>You must complete Challenge ${previousChallengeId} before accessing this challenge.</p>
+            <a href="/" style="color: #007bff; text-decoration: none;">← Back to Game</a>
+          </body>
+        </html>
+      `);
+    }
+  }
+  
   res.sendFile(path.join(__dirname, 'public', 'challenges', `challenge${challengeId}.html`));
 });
 

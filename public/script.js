@@ -232,6 +232,10 @@ async function registerTeam() {
             document.getElementById('register-team').textContent = '✅ Team Registered';
             document.getElementById('register-team').disabled = true;
             
+            // Update challenges grid to reflect lock states
+            updateChallengesGrid();
+            updateChallengeSelect();
+            
             // Show team info
             const teamInfo = document.createElement('div');
             teamInfo.className = 'team-info-display';
@@ -328,23 +332,28 @@ function updateChallengesGrid() {
         const isSolved = currentTeam && teams[currentTeam] && 
                         teams[currentTeam].solvedChallenges.includes(challenge.id);
         
+        // Check if challenge is locked (previous challenge not solved)
+        const isLocked = isChallengeLocked(challenge.id);
+        
         return `
-            <div class="challenge-card ${isSolved ? 'solved' : ''}" data-challenge-id="${challenge.id}">
+            <div class="challenge-card ${isSolved ? 'solved' : ''} ${isLocked ? 'locked' : ''}" data-challenge-id="${challenge.id}">
                 <div class="challenge-header">
                     <div>
                         <h3 class="challenge-title">${challenge.title}</h3>
                         <div class="difficulty-badge ${challenge.difficulty.toLowerCase()}">${challenge.difficulty}</div>
                     </div>
                     ${isSolved ? '<div class="solved-badge">✅ SOLVED</div>' : ''}
+                    ${isLocked ? '<div class="locked-badge">🔒 LOCKED</div>' : ''}
                 </div>
                 <p class="challenge-description">${challenge.description}</p>
                 <div class="challenge-footer">
                     <span class="points">🏆 ${challenge.points} points</span>
                     <div class="challenge-actions">
-                        <button class="btn btn-secondary btn-small" onclick="showHint(${challenge.id})">💡 Hint</button>
-                        <button class="btn btn-primary btn-small" onclick="openChallenge(${challenge.id})">🚀 Start</button>
+                        <button class="btn btn-secondary btn-small" onclick="showHint(${challenge.id})" ${isLocked ? 'disabled' : ''}>💡 Hint</button>
+                        <button class="btn btn-primary btn-small" onclick="openChallenge(${challenge.id})" ${isLocked ? 'disabled' : ''}>${isLocked ? '� Locked' : '�🚀 Start'}</button>
                     </div>
                 </div>
+                ${isLocked ? `<div class="lock-message">Complete previous challenges to unlock!</div>` : ''}
             </div>
         `;
     }).join('');
@@ -354,30 +363,33 @@ function updateChallengesGrid() {
 function updateChallengeSelect() {
     const select = document.getElementById('challenge-select');
     select.innerHTML = '<option value="">Select a challenge...</option>' + 
-        challenges.map(challenge => 
-            `<option value="${challenge.id}">${challenge.title} (${challenge.points} pts)</option>`
-        ).join('');
+        challenges.map(challenge => {
+            const isLocked = isChallengeLocked(challenge.id);
+            const lockPrefix = isLocked ? '🔒 ' : '';
+            return `<option value="${challenge.id}" ${isLocked ? 'disabled' : ''}>${lockPrefix}${challenge.title} (${challenge.points} pts)</option>`;
+        }).join('');
 }
 
 // Update challenge status
 function updateChallengeStatus(challengeId, solved) {
-    const card = document.querySelector(`[data-challenge-id="${challengeId}"]`);
-    if (card) {
-        if (solved) {
-            card.classList.add('solved');
-            if (!card.querySelector('.solved-badge')) {
-                const header = card.querySelector('.challenge-header');
-                const badge = document.createElement('div');
-                badge.className = 'solved-badge';
-                badge.textContent = '✅ SOLVED';
-                header.appendChild(badge);
-            }
-        } else {
-            card.classList.remove('solved');
-            const badge = card.querySelector('.solved-badge');
-            if (badge) badge.remove();
-        }
-    }
+    // Refresh the entire challenges grid and dropdown to update locks
+    updateChallengesGrid();
+    updateChallengeSelect();
+}
+
+// Check if a challenge is locked (previous challenge not solved)
+function isChallengeLocked(challengeId) {
+    // Challenge 1 is always unlocked
+    if (challengeId === 1) return false;
+    
+    // If no team is selected, all challenges except 1 are locked
+    if (!currentTeam || !teams[currentTeam]) return true;
+    
+    // Check if the previous challenge is solved
+    const solvedChallenges = teams[currentTeam].solvedChallenges;
+    const previousChallengeId = challengeId - 1;
+    
+    return !solvedChallenges.includes(previousChallengeId);
 }
 
 // Show hint
@@ -396,8 +408,14 @@ function openChallenge(challengeId) {
         return;
     }
     
-    // Open challenge in new tab
-    window.open(`/challenge/${challengeId}`, '_blank');
+    // Check if challenge is locked
+    if (isChallengeLocked(challengeId)) {
+        showToast('This challenge is locked! Complete previous challenges first.', 'error');
+        return;
+    }
+    
+    // Open challenge in new tab with team parameter
+    window.open(`/challenge/${challengeId}?team=${encodeURIComponent(currentTeam)}`, '_blank');
     playSound('click');
 }
 

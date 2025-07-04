@@ -702,7 +702,7 @@
                     <h4>🔤 Layer 4: Caesar Cipher</h4>
                     <p>Decrypt this Caesar cipher (shift by 3):</p>
                     <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
-                        JDPPD-4
+                        JDPPD-7
                     </div>
                     <input type="text" class="challenge-input" id="layer4-input" placeholder="Enter decrypted message">
                     <button class="mini-submit" onclick="checkLayer(4)">Submit</button>
@@ -743,7 +743,7 @@
             <div style="background: rgba(0,0,0,0.2); padding: 2rem; border-radius: 10px; margin: 2rem 0;">
                 <p style="font-size: 1.2rem; margin-bottom: 1rem;">Combine all layer codes in order:</p>
                 <p style="font-family: 'Courier New', monospace; font-size: 1.1rem;">
-                    ALPHA-7 + BETA-9 + GAMMA-1 + DELTA-5 + ECHO-4 = ?
+                    ALPHA-7 + BETA-9 + GAMMA-1 + GAMMA-4 + DELTA-5 + ECHO-4 = ?
                 </p>
             </div>
             <input type="text" class="challenge-input" id="final-input" placeholder="Enter the final master code" style="max-width: 400px; margin: 0 auto;">
@@ -875,7 +875,7 @@
             1: 'ALPHA-7',
             2: 'BETA-9',
             3: 'GAMMA-1',
-            4: 'GAMMA-1',
+            4: 'GAMMA-4',
             5: 'DELTA-5',
             6: 'ECHO-4'
         };
@@ -942,8 +942,8 @@
                     }
                     break;
                 case 4:
-                    // Caesar cipher: JDPPD-4 -> GAMMA-1 (shift back by 3)
-                    correctAnswer = 'gamma-1';
+                    // Caesar cipher: JDPPD-7 -> GAMMA-4 (shift back by 3)
+                    correctAnswer = 'gamma-4';
                     isCorrect = userAnswer === correctAnswer;
                     break;
                 case 5:
