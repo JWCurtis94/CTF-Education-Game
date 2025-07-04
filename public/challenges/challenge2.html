@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alien Code Breaker - Cyber Defense CTF</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .challenge-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .challenge-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .challenge-content {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .encoded-message {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            padding: 2rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            border: 3px solid #3498db;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            word-break: break-all;
+        }
+        
+        .encoded-message::before {
+            content: '🔐 ENCRYPTED MESSAGE 🔐';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #3498db;
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .message-content {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 5px;
+        }
+        
+        .decoder-tool {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+        
+        .decoder-input {
+            width: 100%;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+        
+        .decode-button {
+            background: #e74c3c;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .decode-button:hover {
+            background: #c0392b;
+        }
+        
+        .decoder-output {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin-top: 1rem;
+            min-height: 50px;
+            font-size: 1.1rem;
+        }
+        
+        .hint-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+        
+        .alien-character {
+            font-size: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .base64-info {
+            background: rgba(0, 123, 255, 0.1);
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .online-tools {
+            background: rgba(108, 117, 125, 0.1);
+            border: 2px solid #6c757d;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .tool-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0.5rem;
+            transition: background 0.3s;
+        }
+        
+        .tool-link:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="challenge-container">
+        <button class="btn btn-secondary back-button" onclick="window.close()">
+            ← Back to Game
+        </button>
+        
+        <div class="challenge-header">
+            <h1>🛸 Alien Code Breaker</h1>
+            <p>Decode the alien's secret message!</p>
+            <div class="difficulty-badge beginner">Beginner</div>
+        </div>
+        
+        <div class="challenge-content">
+            <div class="alien-character">👽</div>
+            <h2>🔐 The Alien's Secret</h2>
+            <p>Our cyber intelligence team intercepted this encoded message from the alien mothership. The aliens are using a common Earth encoding technique to hide their communications.</p>
+            
+            <p>Your mission: Decode this message to reveal the hidden flag!</p>
+            
+            <div class="encoded-message">
+                <div class="message-content">
+                    <strong>INTERCEPTED ALIEN MESSAGE:</strong><br><br>
+                    <span style="font-size: 1.5rem; color: #3498db; font-weight: bold;">
+                        RkxBR3tkZWNvZGVkX3NlY3JldH0=
+                    </span>
+                </div>
+            </div>
+            
+            <div class="hint-box">
+                <h3>💡 Hint</h3>
+                <p>This message looks like it's encoded using Base64. Base64 is a common way to encode data, and you can recognize it by:</p>
+                <ul>
+                    <li>It uses letters A-Z, a-z, numbers 0-9, and symbols + and /</li>
+                    <li>It often ends with = signs as padding</li>
+                    <li>The length is usually a multiple of 4 characters</li>
+                </ul>
+            </div>
+            
+            <div class="base64-info">
+                <h3>📚 What is Base64?</h3>
+                <p>Base64 is an encoding method that converts binary data into ASCII text. It's commonly used to:</p>
+                <ul>
+                    <li>Send binary data over text-based protocols</li>
+                    <li>Store binary data in text files</li>
+                    <li>Encode data for URLs and emails</li>
+                </ul>
+                <p>It's not encryption - it's just encoding, which means it can be easily decoded!</p>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🔧 Built-in Decoder Tool</h2>
+            <div class="decoder-tool">
+                <h3>🛠️ Base64 Decoder</h3>
+                <p>Paste the alien message here to decode it:</p>
+                <input type="text" class="decoder-input" id="base64-input" placeholder="Paste the encoded message here...">
+                <button class="decode-button" onclick="decodeBase64()">🔓 Decode Message</button>
+                <div class="decoder-output" id="decoder-output">
+                    Decoded message will appear here...
+                </div>
+            </div>
+            
+            <div class="online-tools">
+                <h3>🌐 Online Tools (Alternative)</h3>
+                <p>If you prefer to use online tools, here are some reliable Base64 decoders:</p>
+                <a href="https://www.base64decode.org/" target="_blank" class="tool-link">Base64Decode.org</a>
+                <a href="https://base64.guru/converter/decode" target="_blank" class="tool-link">Base64.guru</a>
+                <a href="https://www.base64decode.net/" target="_blank" class="tool-link">Base64Decode.net</a>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>📝 What You've Learned</h2>
+            <ul>
+                <li>How to recognize Base64 encoded data</li>
+                <li>The difference between encoding and encryption</li>
+                <li>Using online tools for decoding</li>
+                <li>Common uses of Base64 in cybersecurity</li>
+            </ul>
+            
+            <h2>🔐 Real-World Application</h2>
+            <p>In real cybersecurity work, you might encounter Base64 in:</p>
+            <ul>
+                <li>Email attachments and headers</li>
+                <li>URLs with encoded parameters</li>
+                <li>Configuration files</li>
+                <li>Malware that tries to hide its payload</li>
+                <li>Web tokens and certificates</li>
+            </ul>
+            
+            <p><strong>Remember:</strong> Base64 is not secure by itself - it's just a way to encode data. Real security requires proper encryption!</p>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎮 Next Steps</h2>
+            <p>Once you've decoded the message and found the flag, head back to the main game page and submit it in the flag submission form. Select "Alien Code Breaker" from the dropdown and enter the flag you found!</p>
+            
+            <button class="btn btn-primary" onclick="window.close()">
+                🚀 Submit Flag on Main Page
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function decodeBase64() {
+            const input = document.getElementById('base64-input').value.trim();
+            const output = document.getElementById('decoder-output');
+            
+            if (!input) {
+                output.textContent = 'Please enter a message to decode.';
+                return;
+            }
+            
+            try {
+                const decoded = atob(input);
+                output.innerHTML = `
+                    <strong>🎉 Decoded message:</strong><br>
+                    <span style="color: #27ae60; font-size: 1.2rem; font-weight: bold;">${decoded}</span>
+                `;
+                
+                // Add some celebration if it's the correct flag
+                if (decoded.includes('FLAG{')) {
+                    output.innerHTML += `
+                        <br><br>
+                        <div style="background: #27ae60; color: white; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
+                            🎊 Congratulations! You found the flag! 🎊<br>
+                            Now submit this flag on the main game page!
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                output.innerHTML = `
+                    <span style="color: #e74c3c;">❌ Error decoding message.</span><br>
+                    <small>Make sure you entered valid Base64 text.</small>
+                `;
+            }
+        }
+        
+        // Allow Enter key to decode
+        document.getElementById('base64-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                decodeBase64();
+            }
+        });
+        
+        // Auto-fill the correct message for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('base64-input').value = 'RkxBR3tkZWNvZGVkX3NlY3JldH0=';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hidden Message in Alien Art - Cyber Defense CTF</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .challenge-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .challenge-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .challenge-content {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .alien-art {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: center;
+            border: 3px solid #9b59b6;
+        }
+        
+        .steganography-image {
+            max-width: 100%;
+            height: auto;
+            border: 3px solid #9b59b6;
+            border-radius: 10px;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .steganography-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .file-upload-area {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .upload-input {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            margin: 1rem;
+            font-size: 1rem;
+            width: 300px;
+        }
+        
+        .upload-button {
+            background: #e74c3c;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .upload-button:hover {
+            background: #c0392b;
+        }
+        
+        .analysis-result {
+            background: rgba(39, 174, 96, 0.1);
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .hint-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+        
+        .steganography-info {
+            background: rgba(0, 123, 255, 0.1);
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .alien-character {
+            font-size: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .online-tools {
+            background: rgba(108, 117, 125, 0.1);
+            border: 2px solid #6c757d;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .tool-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0.5rem;
+            transition: background 0.3s;
+        }
+        
+        .tool-link:hover {
+            background: #0056b3;
+        }
+        
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .metadata-info {
+            background: rgba(108, 117, 125, 0.1);
+            border: 2px solid #6c757d;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .success-box {
+            background: rgba(40, 167, 69, 0.1);
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .image-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        
+        .action-button {
+            background: #6c757d;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .action-button:hover {
+            background: #5a6268;
+        }
+        
+        .action-button.primary {
+            background: #007bff;
+        }
+        
+        .action-button.primary:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="challenge-container">
+        <button class="btn btn-secondary back-button" onclick="window.close()">
+            ← Back to Game
+        </button>
+        
+        <div class="challenge-header">
+            <h1>🛸 Hidden Message in Alien Art</h1>
+            <p>Find the secret hidden in the alien artwork!</p>
+            <div class="difficulty-badge advanced">Advanced</div>
+        </div>
+        
+        <div class="challenge-content">
+            <div class="alien-character">🖼️</div>
+            <h2>🎨 The Alien's Secret Art</h2>
+            <p>Incredible work on the previous challenges! The aliens have become even more creative in hiding their secrets. They've started using digital steganography - the art of hiding messages inside images.</p>
+            
+            <p>Your mission: Analyze the alien artwork below to find the hidden message. The secret could be hidden in the image data itself, in the metadata, or using other steganographic techniques!</p>
+            
+            <div class="steganography-info">
+                <h3>🔍 What is Steganography?</h3>
+                <p>Steganography is the practice of concealing messages or information within other non-secret text or data. In digital steganography, we can hide:</p>
+                <ul>
+                    <li><strong>Messages in image pixels:</strong> Slightly altering color values</li>
+                    <li><strong>Data in metadata:</strong> EXIF data, comments, descriptions</li>
+                    <li><strong>Files inside files:</strong> Embedding one file inside another</li>
+                    <li><strong>LSB (Least Significant Bit) encoding:</strong> Hiding data in the least important bits</li>
+                </ul>
+                <p>Unlike cryptography, steganography tries to hide the existence of the message itself!</p>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🖼️ Alien Artwork</h2>
+            <div class="alien-art">
+                <h3>🎨 "The Invasion Blueprint"</h3>
+                <p>This artwork was intercepted from the alien mothership's cultural archives.</p>
+                <div style="background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460, #533483); width: 100%; height: 200px; border-radius: 10px; margin: 1rem 0; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 20px; left: 20px; width: 60px; height: 60px; background: #ffd700; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                    <div style="position: absolute; top: 60px; right: 30px; width: 40px; height: 40px; background: #ff6b6b; border-radius: 50%; animation: pulse 3s infinite;"></div>
+                    <div style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 80px; height: 20px; background: #4ecdc4; border-radius: 10px; animation: pulse 1.5s infinite;"></div>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.1); font-size: 0.8rem; font-family: 'Courier New', monospace; text-align: center;">
+                        <!-- Hidden: FLAG{hidden_in_plain_sight} -->
+                        ALIEN TRANSMISSION<br>
+                        STATUS: ACTIVE<br>
+                        COORDINATES: [CLASSIFIED]
+                    </div>
+                </div>
+                
+                <div class="image-actions">
+                    <button class="action-button primary" onclick="downloadImage()">
+                        📥 Download Image
+                    </button>
+                    <button class="action-button" onclick="checkMetadata()">
+                        🔍 Check Metadata
+                    </button>
+                    <button class="action-button" onclick="analyzePixels()">
+                        🎨 Analyze Pixels
+                    </button>
+                    <button class="action-button" onclick="viewSource()">
+                        👁️ View Source
+                    </button>
+                </div>
+                
+                <div class="metadata-info" id="metadata-display">
+                    <strong>📊 Image Metadata:</strong><br>
+                    Filename: alien_artwork.png<br>
+                    Dimensions: 800x200 pixels<br>
+                    Created: 2024-01-01 00:00:00<br>
+                    Artist: Unknown Alien Entity<br>
+                    Comment: The truth is hidden in plain sight<br>
+                    Keywords: invasion, blueprint, coordinates<br>
+                    <br>
+                    <strong>🔍 Hidden Data Found:</strong><br>
+                    <span style="color: #28a745; font-weight: bold;">FLAG{hidden_in_plain_sight}</span>
+                </div>
+            </div>
+            
+            <div class="hint-box">
+                <h3>💡 Hint</h3>
+                <p>Sometimes the most obvious place to hide something is right in front of you! Try these approaches:</p>
+                <ul>
+                    <li><strong>Check the HTML source:</strong> Right-click and "View Page Source"</li>
+                    <li><strong>Look at the metadata:</strong> Click "Check Metadata" button</li>
+                    <li><strong>Inspect the CSS:</strong> Use browser developer tools (F12)</li>
+                    <li><strong>Read the visible text:</strong> Sometimes clues are hidden in plain sight</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🔧 Steganography Analysis Tools</h2>
+            <div class="file-upload-area">
+                <h3>📤 Upload Image for Analysis</h3>
+                <p>If you have downloaded the image, you can upload it here for automated analysis:</p>
+                <form id="upload-form" enctype="multipart/form-data">
+                    <input type="file" id="image-upload" accept="image/*" class="upload-input">
+                    <button type="submit" class="upload-button">🔍 Analyze Image</button>
+                </form>
+                
+                <div class="analysis-result" id="analysis-result">
+                    Upload an image to see detailed steganographic analysis...
+                </div>
+            </div>
+            
+            <div class="online-tools">
+                <h3>🌐 Online Steganography Tools</h3>
+                <p>Try these online tools to analyze images for hidden messages:</p>
+                <a href="https://29a.ch/photo-forensics/" target="_blank" class="tool-link">Photo Forensics</a>
+                <a href="https://www.aperisolve.fr/" target="_blank" class="tool-link">Aperi'Solve</a>
+                <a href="https://stegonline.georgeom.net/upload" target="_blank" class="tool-link">StegOnline</a>
+                <a href="https://stylesuxx.github.io/steganography/" target="_blank" class="tool-link">JS Steganography</a>
+                <p><strong>Note:</strong> For this challenge, you can find the flag using the tools on this page or by inspecting the HTML source!</p>
+            </div>
+        </div>
+        
+        <div class="success-box" id="success-box">
+            <h3>🎉 Hidden Message Found!</h3>
+            <p>You've successfully discovered the alien's hidden message!</p>
+            <div id="flag-display" style="background: #28a745; color: white; padding: 1rem; border-radius: 5px; margin: 1rem 0; font-family: 'Courier New', monospace; font-size: 1.2rem;">
+                <!-- Flag will be displayed here -->
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>📝 What You've Learned</h2>
+            <ul>
+                <li>Understanding digital steganography concepts</li>
+                <li>Analyzing image metadata and hidden data</li>
+                <li>Using various tools for steganographic analysis</li>
+                <li>Recognizing different hiding techniques</li>
+                <li>The importance of checking multiple data sources</li>
+            </ul>
+            
+            <h2>🔐 Real-World Applications</h2>
+            <p>Steganography analysis skills are valuable for:</p>
+            <ul>
+                <li><strong>Digital forensics:</strong> Finding hidden evidence in images</li>
+                <li><strong>Cybersecurity:</strong> Detecting data exfiltration attempts</li>
+                <li><strong>Malware analysis:</strong> Uncovering hidden payloads</li>
+                <li><strong>OSINT investigations:</strong> Extracting information from public images</li>
+                <li><strong>Incident response:</strong> Analyzing suspicious files</li>
+            </ul>
+            
+            <div class="warning-box">
+                <h3>⚠️ Ethical Considerations</h3>
+                <p>Steganography can be used for both good and bad purposes:</p>
+                <ul>
+                    <li><strong>Legitimate uses:</strong> Watermarking, copyright protection, secure communications</li>
+                    <li><strong>Malicious uses:</strong> Hiding malware, data theft, covert communications</li>
+                </ul>
+                <p><strong>Always use these techniques responsibly and legally!</strong></p>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎮 Next Steps</h2>
+            <p>Once you've found the hidden flag in the alien artwork, head back to the main game page and submit it in the flag submission form. Select "Hidden Message in Alien Art" from the dropdown and enter the flag you found!</p>
+            
+            <button class="btn btn-primary" onclick="window.close()">
+                🚀 Submit Flag on Main Page
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function downloadImage() {
+            // Create a simple image with the flag hidden in metadata
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 200;
+            
+            // Draw the alien artwork
+            const gradient = ctx.createLinearGradient(0, 0, 800, 200);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(0.33, '#16213e');
+            gradient.addColorStop(0.66, '#0f3460');
+            gradient.addColorStop(1, '#533483');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 800, 200);
+            
+            // Add some visual elements
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.arc(80, 80, 30, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.fillStyle = '#ff6b6b';
+            ctx.beginPath();
+            ctx.arc(720, 100, 20, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.fillStyle = '#4ecdc4';
+            ctx.fillRect(360, 170, 80, 20);
+            
+            // Add text
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = '12px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('ALIEN TRANSMISSION', 400, 90);
+            ctx.fillText('STATUS: ACTIVE', 400, 110);
+            ctx.fillText('COORDINATES: [CLASSIFIED]', 400, 130);
+            
+            // Convert to blob and download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'alien_artwork.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+            
+            showMessage('📥 Image downloaded! You can now analyze it with external tools.');
+        }
+        
+        function checkMetadata() {
+            const display = document.getElementById('metadata-display');
+            display.style.display = 'block';
+            display.style.animation = 'fadeIn 0.5s ease-in';
+            
+            // Show success box
+            document.getElementById('success-box').style.display = 'block';
+            document.getElementById('flag-display').innerHTML = '<strong>🏁 FLAG{hidden_in_plain_sight}</strong>';
+            
+            showMessage('🔍 Metadata analyzed! The flag was hidden in the image metadata.');
+        }
+        
+        function analyzePixels() {
+            const result = document.getElementById('analysis-result');
+            result.innerHTML = `
+                <div style="color: #00ff00;">🎨 Pixel Analysis Complete!</div>
+                <div style="color: #ffffff; margin: 1rem 0;">
+                    <strong>Pixel Data Analysis:</strong><br>
+                    - Color channels: RGB values appear normal<br>
+                    - LSB analysis: No hidden data in least significant bits<br>
+                    - Unusual patterns: None detected<br>
+                    - Transparency: No alpha channel manipulation<br>
+                    <br>
+                    <strong>Recommendation:</strong> Check other hiding locations like metadata or source code.
+                </div>
+            `;
+            
+            showMessage('🎨 Pixel analysis complete! No hidden data found in pixels. Try checking the metadata or source code.');
+        }
+        
+        function viewSource() {
+            showMessage('👁️ Check the HTML source code! Right-click on the page and select "View Page Source", then search for "FLAG" or "hidden".');
+            
+            // Highlight the hidden comment in the artwork
+            const artwork = document.querySelector('.alien-art > div > div:last-child');
+            artwork.style.background = 'rgba(255, 255, 0, 0.2)';
+            artwork.style.border = '2px solid #ffd700';
+            artwork.innerHTML = artwork.innerHTML.replace('<!-- Hidden: FLAG{hidden_in_plain_sight} -->', '<span style="color: #ffd700; font-weight: bold;">🏁 FLAG{hidden_in_plain_sight}</span><br>');
+            
+            // Show success box
+            document.getElementById('success-box').style.display = 'block';
+            document.getElementById('flag-display').innerHTML = '<strong>🏁 FLAG{hidden_in_plain_sight}</strong>';
+        }
+        
+        function showMessage(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                padding: 1rem 1.5rem;
+                background: #28a745;
+                color: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000;
+                max-width: 300px;
+                font-size: 0.9rem;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+        
+        // Handle file upload
+        document.getElementById('upload-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('image-upload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                document.getElementById('analysis-result').innerHTML = '<div style="color: #e74c3c;">❌ Please select an image file first.</div>';
+                return;
+            }
+            
+            // Simulate image analysis
+            const result = document.getElementById('analysis-result');
+            result.innerHTML = `
+                <div style="color: #00ff00;">🔍 Analyzing uploaded image...</div>
+                <div style="color: #ffffff; margin: 1rem 0;">
+                    <strong>File:</strong> ${file.name}<br>
+                    <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB<br>
+                    <strong>Type:</strong> ${file.type}<br>
+                    <br>
+                    <strong>Steganographic Analysis:</strong><br>
+                    ✅ Metadata extracted<br>
+                    ✅ LSB analysis completed<br>
+                    ✅ Hidden data detected<br>
+                    <br>
+                    <span style="color: #ffd700; font-weight: bold;">🏁 FLAG FOUND: FLAG{hidden_in_plain_sight}</span>
+                </div>
+            `;
+            
+            // Show success box
+            document.getElementById('success-box').style.display = 'block';
+            document.getElementById('flag-display').innerHTML = '<strong>🏁 FLAG{hidden_in_plain_sight}</strong>';
+            
+            showMessage('🎉 Image analysis complete! Flag found in the uploaded image.');
+        });
+        
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.7; }
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add some interactive hints
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                showMessage('💡 Hint: The flag might be hidden in the HTML source code or image metadata. Try the buttons above!');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

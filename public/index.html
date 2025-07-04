@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛸 Cyber Defense CTF - Save Earth! 🌍</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">🛸 CYBER DEFENSE CTF 🛸</h1>
+                <p class="subtitle">Save Earth from the Alien Invasion!</p>
+                <div class="controls">
+                    <button id="theme-toggle" class="btn btn-secondary">🌙 Dark Mode</button>
+                    <button id="sound-toggle" class="btn btn-secondary">🔊 Sound ON</button>
+                    <button id="help-toggle" class="btn btn-secondary">❓ Help</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Help Modal -->
+        <div id="help-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>🎮 How to Play</h2>
+                <div class="help-content">
+                    <h3>🚀 Your Mission</h3>
+                    <p>The aliens have invaded Earth! Work with your team to solve cybersecurity challenges and find hidden flags to save our planet.</p>
+                    
+                    <h3>🏆 Game Rules</h3>
+                    <ul>
+                        <li>Form teams of 2-4 students</li>
+                        <li>Solve challenges to earn points</li>
+                        <li>Find flags that look like: <code>FLAG{example}</code></li>
+                        <li>Higher difficulty = more points</li>
+                        <li>Team with most points wins!</li>
+                    </ul>
+                    
+                    <h3>🔧 Common Tools</h3>
+                    <ul>
+                        <li><strong>F12 or Right-click → Inspect:</strong> View HTML source</li>
+                        <li><strong>Base64 Decoder:</strong> Decode encoded messages</li>
+                        <li><strong>robots.txt:</strong> Check /robots.txt for hidden directories</li>
+                        <li><strong>SQL Injection:</strong> Try ' OR '1'='1 in password fields</li>
+                    </ul>
+                    
+                    <h3>♿ Accessibility</h3>
+                    <p>Use the buttons above to toggle dark mode, sound effects, and get hints when stuck!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Registration -->
+        <div id="team-section" class="section">
+            <h2>🏅 Team Registration</h2>
+            <div class="team-form">
+                <input type="text" id="team-name" placeholder="Enter your team name (e.g., Cyber Warriors)" maxlength="30">
+                <input type="text" id="team-members" placeholder="Team members (optional, e.g., Alice, Bob, Charlie)" maxlength="100">
+                <button id="register-team" class="btn btn-primary">🚀 Join the Mission!</button>
+            </div>
+            <div id="team-status" class="status-message"></div>
+        </div>
+
+        <!-- Scoreboard -->
+        <div id="scoreboard-section" class="section">
+            <h2>🏆 Mission Scoreboard</h2>
+            <div id="scoreboard" class="scoreboard">
+                <div class="no-teams">No teams registered yet. Be the first to join the mission!</div>
+            </div>
+        </div>
+
+        <!-- Challenge List -->
+        <div id="challenges-section" class="section">
+            <h2>🎯 Mission Challenges</h2>
+            <div id="challenges-grid" class="challenges-grid">
+                <!-- Challenges will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Flag Submission -->
+        <div id="flag-section" class="section">
+            <h2>🏁 Submit Your Flag</h2>
+            <div class="flag-form">
+                <select id="challenge-select">
+                    <option value="">Select a challenge...</option>
+                </select>
+                <input type="text" id="flag-input" placeholder="Enter flag (e.g., FLAG{example})" maxlength="100">
+                <button id="submit-flag" class="btn btn-primary">🎯 Submit Flag</button>
+            </div>
+            <div id="flag-status" class="status-message"></div>
+        </div>
+
+        <!-- Victory Modal -->
+        <div id="victory-modal" class="modal">
+            <div class="modal-content victory-content">
+                <div class="victory-animation">
+                    <div class="planet earth">🌍</div>
+                    <div class="sparkles">✨</div>
+                    <h2>🎉 EARTH IS SAVED! 🎉</h2>
+                    <p>Congratulations! You've successfully defended Earth from the alien invasion!</p>
+                    <div class="victory-stats">
+                        <div class="stat">
+                            <span class="stat-label">Final Score:</span>
+                            <span class="stat-value" id="final-score">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Challenges Solved:</span>
+                            <span class="stat-value" id="challenges-solved">0</span>
+                        </div>
+                    </div>
+                    <button id="play-again" class="btn btn-primary">🚀 Play Again</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="toast" class="toast"></div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>🛡️ Educational CTF Game for Young Cyber Defenders | Made with ❤️ for learning</p>
+            <p>⚠️ Remember: Only use these skills for good! Ethical hacking protects everyone.</p>
+        </footer>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="success-sound" preload="auto">
+        <source src="sounds/success.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="background-music" loop>
+        <source src="sounds/background.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+image:
+  file: .gitpod.Dockerfile
+
+ports:
+  - port: 3000
+    onOpen: open-browser
+    visibility: public
+
+tasks:
+  - name: Install dependencies and start server
+    init: |
+      npm install
+      mkdir -p data
+      echo "🎮 Educational CTF Game Setup Complete!"
+      echo "🚀 The game will start automatically"
+      echo "🌐 Access the game at: https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+      echo "👨‍💻 Admin panel: https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}/admin"
+    command: |
+      echo "🎯 Starting Educational CTF Game..."
+      npm start
+
+vscode:
+  extensions:
+    - ms-vscode.vscode-typescript-next
+    - esbenp.prettier-vscode
+    - bradlc.vscode-tailwindcss
+    - ms-vscode.vscode-json
+
+github:
+  prebuilds:
+    master: true
+    branches: true
+    pullRequests: true
+    pullRequestsFromForks: true
+    addCheck: true
+    addComment: true
+    addBadge: true

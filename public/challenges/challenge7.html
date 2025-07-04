@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Alien Stronghold - Cyber Defense CTF</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .challenge-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .challenge-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .challenge-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.1) 10px,
+                rgba(255, 255, 255, 0.1) 20px
+            );
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .challenge-content {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .mothership-interface {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #00ff00;
+            padding: 2rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            border: 3px solid #e74c3c;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mothership-interface::before {
+            content: '🚨 ALIEN MOTHERSHIP MAINFRAME 🚨';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .terminal-content {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .multi-challenge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .mini-challenge {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .mini-challenge:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .mini-challenge.completed {
+            background: linear-gradient(135deg, var(--surface-color), rgba(40, 167, 69, 0.1));
+            border-color: var(--success-color);
+        }
+        
+        .mini-challenge h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .mini-challenge.completed h4 {
+            color: var(--success-color);
+        }
+        
+        .challenge-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            background: var(--surface-color);
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+        
+        .challenge-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .mini-submit {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .mini-submit:hover {
+            background: var(--accent-color);
+        }
+        
+        .mini-submit:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .progress-bar {
+            background: var(--border-color);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .alien-character {
+            font-size: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .final-flag-display {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            text-align: center;
+            display: none;
+            animation: victory 2s ease-in-out infinite;
+        }
+        
+        @keyframes victory {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .hint-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+        
+        .mothership-status {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .system-breach {
+            background: rgba(40, 167, 69, 0.1);
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            display: none;
+        }
+        
+        .countdown-timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+            text-align: center;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Quiz Styles */
+        .final-quiz-container {
+            background: linear-gradient(135deg, #6c5ce7, #5a4fcf);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            display: none;
+        }
+        
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .quiz-header h2 {
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        .quiz-progress-container {
+            margin: 1rem 0;
+        }
+        
+        .quiz-progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .quiz-progress-fill {
+            background: linear-gradient(90deg, #28a745, #20c997);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .quiz-progress-text {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .quiz-timer {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 2px solid rgba(255, 193, 7, 0.5);
+        }
+        
+        .timer-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timer-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .timer-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .timer-countdown {
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #ffd700;
+            margin-left: 0.5rem;
+        }
+        
+        .timer-countdown.warning {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+        
+        .timer-countdown.danger {
+            color: #dc3545;
+            animation: pulse 0.5s infinite;
+        }
+        
+        .timer-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .timer-progress {
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            height: 100%;
+            width: 100%;
+            transition: width 1s linear;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .quiz-rules {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .quiz-rules h3 {
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+        
+        .quiz-rules ul {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+        
+        .quiz-rules li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .quiz-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .quiz-btn.start {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            font-size: 1.2rem;
+            padding: 15px 30px;
+        }
+        
+        .quiz-btn.secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+        
+        .quiz-btn.success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            font-size: 1.2rem;
+            padding: 15px 30px;
+        }
+        
+        .quiz-btn.retry {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+        
+        .current-question {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 1rem 0;
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .question-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .question-category {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+        
+        .question-options {
+            margin-bottom: 1.5rem;
+        }
+        
+        .option-label {
+            display: block;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option-label:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffd700;
+        }
+        
+        .option-label input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .option-text {
+            flex: 1;
+        }
+        
+        .question-controls {
+            text-align: center;
+        }
+        
+        .quiz-score {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .quiz-score.passed {
+            background: rgba(40, 167, 69, 0.2);
+            border: 2px solid #28a745;
+        }
+        
+        .quiz-score.failed {
+            background: rgba(220, 53, 69, 0.2);
+            border: 2px solid #dc3545;
+        }
+        
+        .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .score-number {
+            color: #ffd700;
+        }
+        
+        .score-percentage {
+            color: #28a745;
+            margin-left: 1rem;
+        }
+        
+        .quiz-review {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        
+        .quiz-review h4 {
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+        
+        .answer-review {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+        
+        .answer-review.correct {
+            border-left-color: #28a745;
+        }
+        
+        .answer-review.incorrect {
+            border-left-color: #dc3545;
+        }
+        
+        .answer-review.unanswered {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+        
+        .review-question {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .review-answer {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .quiz-actions {
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .question-category {
+                margin-top: 0.5rem;
+            }
+            
+            .quiz-btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+        
+        .mini-result {
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .mini-result.success {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+        }
+        
+        .mini-result.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--error-color);
+        }
+        
+        .final-sequence {
+            background: linear-gradient(135deg, #6f42c1, #007bff);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="challenge-container">
+        <button class="btn btn-secondary back-button" onclick="window.close()">
+            ← Back to Game
+        </button>
+        
+        <div class="challenge-header">
+            <div class="alien-character">🛸</div>
+            <h1>🚨 FINAL ALIEN STRONGHOLD 🚨</h1>
+            <p>The Ultimate Challenge - Save Earth!</p>
+            <div class="difficulty-badge expert">Expert</div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🌍 The Final Battle</h2>
+            <p>Incredible work, cyber defender! You've made it to the alien mothership's core systems. This is it - the final challenge that will determine the fate of Earth!</p>
+            
+            <p>The alien mothership's mainframe is protected by multiple security layers. You'll need to use ALL the skills you've learned to breach their defenses and save our planet!</p>
+            
+            <div class="mothership-status">
+                <strong>🚨 MOTHERSHIP STATUS:</strong><br>
+                Systems Online: 100%<br>
+                Defense Grid: ACTIVE<br>
+                Invasion Countdown: <span id="countdown">15:00</span><br>
+                Earth's Fate: PENDING
+            </div>
+            
+            <div class="system-breach" id="system-breach">
+                <strong>🎉 SYSTEM BREACH SUCCESSFUL!</strong><br>
+                Mothership Systems: COMPROMISED<br>
+                Defense Grid: OFFLINE<br>
+                Invasion Status: CANCELLED<br>
+                Earth's Fate: SAVED! 🌍
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🔒 Multi-Layer Security Challenge</h2>
+            <p>Complete all security layers to access the mothership's core systems:</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <p style="text-align: center; margin-bottom: 2rem;">
+                <strong>Progress: <span id="progress-text">0/6 layers breached</span></strong>
+            </p>
+            
+            <div class="multi-challenge-grid">
+                <!-- Layer 1: HTML Inspection -->
+                <div class="mini-challenge" id="layer1">
+                    <h4>🔍 Layer 1: Source Code Analysis</h4>
+                    <p>Find the hidden access code in this HTML comment:</p>
+                    <!-- ACCESS_CODE: ALPHA-7 -->
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        &lt;!-- The access code is hidden in this comment --&gt;
+                    </div>
+                    <input type="text" class="challenge-input" id="layer1-input" placeholder="Enter access code">
+                    <button class="mini-submit" onclick="checkLayer(1)">Submit</button>
+                    <div class="mini-result" id="layer1-result"></div>
+                </div>
+                
+                <!-- Layer 2: Base64 Decoding -->
+                <div class="mini-challenge" id="layer2">
+                    <h4>🔐 Layer 2: Decode the Message</h4>
+                    <p>Decode this Base64 string:</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        QkVUQS05
+                    </div>
+                    <input type="text" class="challenge-input" id="layer2-input" placeholder="Enter decoded message">
+                    <button class="mini-submit" onclick="checkLayer(2)">Submit</button>
+                    <div class="mini-result" id="layer2-result"></div>
+                </div>
+                
+                <!-- Layer 3: SQL Injection -->
+                <div class="mini-challenge" id="layer3">
+                    <h4>💾 Layer 3: Database Bypass</h4>
+                    <p>Bypass this SQL authentication:</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        SELECT * FROM access WHERE code = '[INPUT]'
+                    </div>
+                    <input type="text" class="challenge-input" id="layer3-input" placeholder="Enter SQL injection payload">
+                    <button class="mini-submit" onclick="checkLayer(3)">Submit</button>
+                    <div class="mini-result" id="layer3-result"></div>
+                </div>
+                
+                <!-- Layer 4: Caesar Cipher -->
+                <div class="mini-challenge" id="layer4">
+                    <h4>🔤 Layer 4: Caesar Cipher</h4>
+                    <p>Decrypt this Caesar cipher (shift by 3):</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        JDPPD-7
+                    </div>
+                    <input type="text" class="challenge-input" id="layer4-input" placeholder="Enter decrypted message">
+                    <button class="mini-submit" onclick="checkLayer(4)">Submit</button>
+                    <div class="mini-result" id="layer4-result"></div>
+                </div>
+                
+                <!-- Layer 5: Reverse Engineering -->
+                <div class="mini-challenge" id="layer5">
+                    <h4>🔧 Layer 5: Reverse Engineering</h4>
+                    <p>This function generates the access code:</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        function getCode() {<br>
+                        &nbsp;&nbsp;return 'DELTA-' + (10-5);<br>
+                        }
+                    </div>
+                    <input type="text" class="challenge-input" id="layer5-input" placeholder="Enter function output">
+                    <button class="mini-submit" onclick="checkLayer(5)">Submit</button>
+                    <div class="mini-result" id="layer5-result"></div>
+                </div>
+                
+                <!-- Layer 6: Pattern Recognition -->
+                <div class="mini-challenge" id="layer6">
+                    <h4>🧩 Layer 6: Pattern Recognition</h4>
+                    <p>Find the next in the sequence:</p>
+                    <div style="background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 5px; font-family: 'Courier New', monospace;">
+                        ECHO-1, ECHO-2, ECHO-3, ECHO-?
+                    </div>
+                    <input type="text" class="challenge-input" id="layer6-input" placeholder="Enter the next code">
+                    <button class="mini-submit" onclick="checkLayer(6)">Submit</button>
+                    <div class="mini-result" id="layer6-result"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="final-sequence" id="final-sequence">
+            <h2>🎯 Final Access Sequence</h2>
+            <p>All security layers breached! Enter the final master code to save Earth:</p>
+            <div style="background: rgba(0,0,0,0.2); padding: 2rem; border-radius: 10px; margin: 2rem 0;">
+                <p style="font-size: 1.2rem; margin-bottom: 1rem;">Combine all layer codes in order:</p>
+                <p style="font-family: 'Courier New', monospace; font-size: 1.1rem;">
+                    ALPHA-7 + BETA-9 + GAMMA-1 + GAMMA-4 + DELTA-5 + ECHO-4 = ?
+                </p>
+            </div>
+            <input type="text" class="challenge-input" id="final-input" placeholder="Enter the final master code" style="max-width: 400px; margin: 0 auto;">
+            <button class="mini-submit" onclick="checkFinalCode()" style="max-width: 200px;">🚀 SAVE EARTH!</button>
+            <div class="mini-result" id="final-result"></div>
+        </div>
+        
+        <!-- Quiz Container -->
+        <div class="final-quiz-container" id="final-quiz-container" style="display: none;">
+            <div class="quiz-header">
+                <h2>🧠 Final Knowledge Quiz</h2>
+                <p>Before claiming your final flag, demonstrate your understanding of ethical hacking and the challenges you've completed!</p>
+                <div class="quiz-timer" id="quiz-timer" style="display: none;">
+                    <div class="timer-display">
+                        <span class="timer-icon">⏰</span>
+                        <span class="timer-text">Time Remaining: </span>
+                        <span class="timer-countdown" id="timer-countdown">10:00</span>
+                    </div>
+                    <div class="timer-bar">
+                        <div class="timer-progress" id="timer-progress"></div>
+                    </div>
+                </div>
+                <div class="quiz-progress-container">
+                    <div class="quiz-progress-bar">
+                        <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
+                    </div>
+                    <div class="quiz-progress-text" id="quiz-progress-text">Ready to Start</div>
+                </div>
+            </div>
+            
+            <div class="quiz-content">
+                <div class="quiz-intro" id="quiz-intro">
+                    <div class="quiz-rules">
+                        <h3>📋 Quiz Rules</h3>
+                        <ul>
+                            <li>24 questions covering all challenges + ethical hacking principles</li>
+                            <li>⏰ <strong>10 minutes</strong> time limit - answer efficiently but thoughtfully</li>
+                            <li>You need 70% (17/24) to pass and get your final flag</li>
+                            <li>Questions cover what you learned in each challenge</li>
+                            <li>Strong focus on ethical hacking principles and why illegal hacking is wrong</li>
+                            <li>Timer starts when you begin the quiz</li>
+                            <li>You can retake the quiz if needed</li>
+                        </ul>
+                        <button class="quiz-btn start" onclick="startQuiz()">🚀 Start Quiz</button>
+                    </div>
+                </div>
+                
+                <div class="quiz-questions" id="quiz-questions" style="display: none;">
+                    <div class="current-question" id="current-question">
+                        <!-- Questions will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="quiz-results" id="quiz-results" style="display: none;">
+                    <div id="quiz-results-content">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="final-flag-display" id="final-flag-display">
+            <h2>🎉 EARTH IS SAVED! 🎉</h2>
+            <div style="font-size: 2rem; margin: 2rem 0;">🌍✨🛸💥</div>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">The alien invasion has been stopped! The mothership is retreating!</p>
+            <div style="background: rgba(0,0,0,0.3); padding: 2rem; border-radius: 10px; margin: 2rem 0;">
+                <h3>🏁 FINAL FLAG:</h3>
+                <div style="font-size: 1.5rem; font-family: 'Courier New', monospace; font-weight: bold; margin: 1rem 0;">
+                    FLAG{earth_is_saved}
+                </div>
+            </div>
+            <p>Congratulations, cyber defender! You've successfully completed the ultimate challenge!</p>
+        </div>
+        
+        <div class="challenge-content">
+            <div class="hint-box">
+                <h3>💡 Master Hints</h3>
+                <p>You'll need to use all the techniques you've learned:</p>
+                <ul>
+                    <li><strong>Layer 1:</strong> Check the HTML source code for comments</li>
+                    <li><strong>Layer 2:</strong> Use Base64 decoding (try online tools or browser console)</li>
+                    <li><strong>Layer 3:</strong> Use SQL injection: ' OR '1'='1</li>
+                    <li><strong>Layer 4:</strong> Caesar cipher - shift each letter back by 3</li>
+                    <li><strong>Layer 5:</strong> Execute the JavaScript function mentally</li>
+                    <li><strong>Layer 6:</strong> Follow the numerical pattern in the sequence</li>
+                </ul>
+            </div>
+            
+            <h2>📝 What You've Mastered</h2>
+            <p>This final challenge combines all the cybersecurity skills you've learned:</p>
+            <ul>
+                <li>HTML source code analysis and inspection</li>
+                <li>Base64 encoding and decoding</li>
+                <li>SQL injection techniques</li>
+                <li>Classical cryptography (Caesar cipher)</li>
+                <li>Reverse engineering and code analysis</li>
+                <li>Pattern recognition and logical thinking</li>
+                <li>Multi-layer security assessment</li>
+            </ul>
+            
+            <h2>🎓 Your Cybersecurity Journey</h2>
+            <p>You've successfully completed the Cyber Defense CTF! You now have foundational knowledge in:</p>
+            <ul>
+                <li>Web application security testing</li>
+                <li>Basic penetration testing techniques</li>
+                <li>Code analysis and reverse engineering</li>
+                <li>Cryptography and steganography</li>
+                <li>Database security and SQL injection</li>
+                <li>Digital forensics and investigation</li>
+            </ul>
+            
+            <p><strong>Next Steps:</strong> Consider exploring cybersecurity careers, bug bounty programs, or advanced CTF competitions!</p>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎮 Final Submission</h2>
+            <p>Once you've completed all layers and received the final flag, head back to the main game page and submit it in the flag submission form. Select "Final Alien Stronghold" from the dropdown and enter the flag to complete your mission!</p>
+            
+            <button class="btn btn-primary" onclick="window.close()">
+                🚀 Submit Final Flag
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let completedLayers = 0;
+        const totalLayers = 6;
+        const layerAnswers = {
+            1: 'ALPHA-7',
+            2: 'BETA-9',
+            3: 'GAMMA-1',
+            4: 'GAMMA-4',
+            5: 'DELTA-5',
+            6: 'ECHO-4'
+        };
+        
+        // Countdown timer for invasion narrative (15 minutes - longer than quiz)
+        let countdownMinutes = 15;
+        let countdownSeconds = 0;
+        
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const timeString = `${countdownMinutes.toString().padStart(2, '0')}:${countdownSeconds.toString().padStart(2, '0')}`;
+            countdownElement.textContent = timeString;
+            
+            if (countdownMinutes === 0 && countdownSeconds === 0) {
+                countdownElement.style.color = '#e74c3c';
+                countdownElement.textContent = 'TIME UP!';
+                return;
+            }
+            
+            countdownSeconds--;
+            if (countdownSeconds < 0) {
+                countdownMinutes--;
+                countdownSeconds = 59;
+            }
+            
+            // Change color as time runs out
+            if (countdownMinutes < 3) {
+                countdownElement.style.color = '#e74c3c';
+            } else if (countdownMinutes < 5) {
+                countdownElement.style.color = '#f39c12';
+            }
+        }
+        
+        // Start countdown
+        setInterval(updateCountdown, 1000);
+        
+        function checkLayer(layerNum) {
+            const input = document.getElementById(`layer${layerNum}-input`);
+            const result = document.getElementById(`layer${layerNum}-result`);
+            const layer = document.getElementById(`layer${layerNum}`);
+            const userAnswer = input.value.trim().toLowerCase();
+            
+            let correctAnswer = '';
+            let isCorrect = false;
+            
+            switch(layerNum) {
+                case 1:
+                    // HTML comment: ALPHA-7
+                    correctAnswer = 'alpha-7';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+                case 2:
+                    // Base64: QkVUQS05 -> BETA-9
+                    correctAnswer = 'beta-9';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+                case 3:
+                    // SQL injection should return GAMMA-1
+                    correctAnswer = 'gamma-1';
+                    isCorrect = userAnswer === correctAnswer || userAnswer.includes("' or '1'='1") || userAnswer.includes("' or 1=1");
+                    if (userAnswer.includes("' or ")) {
+                        correctAnswer = 'gamma-1';
+                        isCorrect = true;
+                    }
+                    break;
+                case 4:
+                    // Caesar cipher: JDPPD-7 -> GAMMA-4 (shift back by 3)
+                    correctAnswer = 'gamma-4';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+                case 5:
+                    // JavaScript function: DELTA-5
+                    correctAnswer = 'delta-5';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+                case 6:
+                    // Pattern: ECHO-4
+                    correctAnswer = 'echo-4';
+                    isCorrect = userAnswer === correctAnswer;
+                    break;
+            }
+            
+            if (isCorrect) {
+                result.textContent = '✅ Layer breached!';
+                result.className = 'mini-result success';
+                layer.classList.add('completed');
+                input.disabled = true;
+                document.querySelector(`#layer${layerNum} .mini-submit`).disabled = true;
+                
+                completedLayers++;
+                updateProgress();
+                
+                if (completedLayers === totalLayers) {
+                    setTimeout(() => {
+                        document.getElementById('final-sequence').style.display = 'block';
+                        document.getElementById('final-sequence').scrollIntoView({ behavior: 'smooth' });
+                    }, 1000);
+                }
+            } else {
+                result.textContent = '❌ Incorrect. Try again!';
+                result.className = 'mini-result error';
+                
+                // Provide specific hints
+                if (layerNum === 1) {
+                    result.textContent += ' (Hint: Check the HTML source code)';
+                } else if (layerNum === 2) {
+                    result.textContent += ' (Hint: Decode the Base64 string)';
+                } else if (layerNum === 3) {
+                    result.textContent += ' (Hint: Use SQL injection)';
+                } else if (layerNum === 4) {
+                    result.textContent += ' (Hint: Shift each letter back by 3)';
+                } else if (layerNum === 5) {
+                    result.textContent += ' (Hint: What does the function return?)';
+                } else if (layerNum === 6) {
+                    result.textContent += ' (Hint: Follow the number sequence)';
+                }
+            }
+        }
+        
+        function updateProgress() {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            const percentage = (completedLayers / totalLayers) * 100;
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = `${completedLayers}/${totalLayers} layers breached`;
+            
+            if (completedLayers === totalLayers) {
+                progressText.textContent = 'All layers breached! Access granted!';
+                progressFill.style.background = 'linear-gradient(90deg, #28a745, #20c997)';
+            }
+        }
+        
+        function checkFinalCode() {
+            const input = document.getElementById('final-input');
+            const result = document.getElementById('final-result');
+            const userAnswer = input.value.trim().toLowerCase();
+            
+            // The final code should be a combination or specific pattern
+            const correctAnswers = ['earth_is_saved', 'flag{earth_is_saved}', 'earthissaved'];
+            
+            if (correctAnswers.includes(userAnswer)) {
+                result.textContent = '🎉 EARTH IS SAVED! Now complete the final quiz to get your flag!';
+                result.className = 'mini-result success';
+                
+                // Show quiz instead of final flag
+                document.getElementById('final-quiz-container').style.display = 'block';
+                document.getElementById('system-breach').style.display = 'block';
+                
+                // Add celebration effects
+                createCelebration();
+                
+                // Scroll to quiz
+                setTimeout(() => {
+                    document.getElementById('final-quiz-container').scrollIntoView({ behavior: 'smooth' });
+                }, 1000);
+                
+            } else {
+                result.textContent = '❌ Incorrect master code. Review all layer codes!';
+                result.className = 'mini-result error';
+            }
+        }
+        
+        // Quiz data: First questions about previous challenges, then 5 ethics/law questions
+        const quizQuestions = [
+            // Questions about previous challenges (what they learned)
+            {
+                question: "In Challenge 1 (HTML Inspection), what did you learn to do to find hidden information?",
+                options: ["Look at the website design", "View the page source code", "Check the URL", "Read the page title"],
+                correct: 1,
+                challenge: "Challenge 1 Review"
+            },
+            {
+                question: "What encoding method did you decode in Challenge 2?",
+                options: ["Caesar cipher", "Base64", "Binary", "Hexadecimal"],
+                correct: 1,
+                challenge: "Challenge 2 Review"
+            },
+            {
+                question: "In Challenge 3, what special file did you learn about that tells search engines what not to index?",
+                options: ["sitemap.xml", "robots.txt", "index.html", "config.txt"],
+                correct: 1,
+                challenge: "Challenge 3 Review"
+            },
+            {
+                question: "Challenge 4 taught you about SQL injection. What does this attack target?",
+                options: ["Website design", "Database queries", "Image files", "User passwords"],
+                correct: 1,
+                challenge: "Challenge 4 Review"
+            },
+            {
+                question: "In Challenge 5, what technique made the JavaScript code hard to read?",
+                options: ["Encryption", "Obfuscation", "Compression", "Translation"],
+                correct: 1,
+                challenge: "Challenge 5 Review"
+            },
+            {
+                question: "Challenge 6 taught you about steganography. What is this?",
+                options: ["Encrypting text", "Hiding messages in images", "Creating strong passwords", "Scanning for viruses"],
+                correct: 1,
+                challenge: "Challenge 6 Review"
+            },
+            {
+                question: "What important skill did you practice throughout all challenges?",
+                options: ["Programming", "Problem-solving and logical thinking", "Typing fast", "Memorizing codes"],
+                correct: 1,
+                challenge: "Overall Learning"
+            },
+            // Critical ethics and law questions (5 questions as requested)
+            {
+                question: "What is the MOST important rule before testing security on any computer system?",
+                options: ["Make sure you have good tools", "Get explicit written permission from the owner", "Check if it's vulnerable first", "Make sure no one is watching"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "Which of these is ILLEGAL and could result in prison time?",
+                options: ["Learning about cybersecurity in school", "Participating in legal CTF competitions", "Hacking into someone's computer without permission", "Reading about hacking techniques"],
+                correct: 2,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "If someone asks you to hack into their ex-partner's social media account, what should you do?",
+                options: ["Help them if they pay you well", "Do it secretly without telling anyone", "Refuse completely - this is illegal and harmful", "Only help if they seem really upset"],
+                correct: 2,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "What are the potential consequences of illegal hacking?",
+                options: ["Just a warning from police", "Prison time, huge fines, and a permanent criminal record", "A small fine if you get caught", "Nothing serious if you're under 18"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            },
+            {
+                question: "Why should you NEVER use hacking skills for illegal activities?",
+                options: ["Because it's too difficult", "Because it destroys trust, harms innocent people, and ruins your future", "Because you might not be successful", "Because it's boring"],
+                correct: 1,
+                challenge: "Ethics & Law"
+            }
+        ];
+        
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let userAnswers = [];
+        let quizTimer;
+        let timeRemaining = 600; // 10 minutes in seconds
+        let quizStartTime;
+        
+        function startQuiz() {
+            document.getElementById('quiz-intro').style.display = 'none';
+            document.getElementById('quiz-questions').style.display = 'block';
+            document.getElementById('quiz-timer').style.display = 'block';
+            
+            // Start the timer
+            quizStartTime = Date.now();
+            startTimer();
+            
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            const question = quizQuestions[currentQuestionIndex];
+            const questionContainer = document.getElementById('current-question');
+            
+            questionContainer.innerHTML = `
+                <div class="question-header">
+                    <h3>Question ${currentQuestionIndex + 1} of ${quizQuestions.length}</h3>
+                    <span class="question-category">${question.challenge}</span>
+                </div>
+                <div class="question-text">${question.question}</div>
+                <div class="question-options">
+                    ${question.options.map((option, index) => `
+                        <label class="option-label">
+                            <input type="radio" name="question-${currentQuestionIndex}" value="${index}">
+                            <span class="option-text">${option}</span>
+                        </label>
+                    `).join('')}
+                </div>
+                <div class="question-controls">
+                    <button class="quiz-btn" onclick="submitAnswer()" ${currentQuestionIndex === 0 ? '' : 'style="margin-left: 10px;"'}>
+                        ${currentQuestionIndex === quizQuestions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+                    </button>
+                    ${currentQuestionIndex > 0 ? '<button class="quiz-btn secondary" onclick="previousQuestion()">Previous</button>' : ''}
+                </div>
+            `;
+            
+            updateQuizProgress();
+        }
+        
+        function submitAnswer() {
+            const selected = document.querySelector(`input[name="question-${currentQuestionIndex}"]:checked`);
+            if (!selected) {
+                alert('Please select an answer before continuing.');
+                return;
+            }
+            
+            const answer = parseInt(selected.value);
+            userAnswers[currentQuestionIndex] = answer;
+            
+            if (answer === quizQuestions[currentQuestionIndex].correct) {
+                correctAnswers++;
+            }
+            
+            if (currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+        
+        function updateQuizProgress() {
+            const progressBar = document.getElementById('quiz-progress-fill');
+            const progressText = document.getElementById('quiz-progress-text');
+            
+            const percentage = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `Question ${currentQuestionIndex + 1} of ${quizQuestions.length}`;
+        }
+        
+        function showResults() {
+            // Stop the timer
+            stopTimer();
+            
+            const percentage = Math.round((correctAnswers / quizQuestions.length) * 100);
+            const passed = percentage >= 70; // Need 70% to pass
+            
+            document.getElementById('quiz-questions').style.display = 'none';
+            document.getElementById('quiz-timer').style.display = 'none';
+            document.getElementById('quiz-results').style.display = 'block';
+            
+            const resultsContainer = document.getElementById('quiz-results-content');
+            resultsContainer.innerHTML = `
+                <div class="quiz-score ${passed ? 'passed' : 'failed'}">
+                    <h3>${passed ? '🎉 Quiz Passed!' : '❌ Quiz Failed'}</h3>
+                    <div class="score-display">
+                        <span class="score-number">${correctAnswers}/${quizQuestions.length}</span>
+                        <span class="score-percentage">${percentage}%</span>
+                    </div>
+                    <p>${passed ? 
+                        'Congratulations! You have demonstrated understanding of ethical hacking principles and the challenges you completed.' : 
+                        'You need at least 70% to pass. Review the challenges and try again!'
+                    }</p>
+                </div>
+                
+                <div class="quiz-review">
+                    <h4>Review Your Answers:</h4>
+                    ${quizQuestions.map((q, index) => {
+                        const userAnswer = userAnswers[index];
+                        const isCorrect = userAnswer === q.correct;
+                        const wasAnswered = userAnswer !== -1 && userAnswer !== undefined;
+                        
+                        let reviewClass = 'incorrect';
+                        if (!wasAnswered) {
+                            reviewClass = 'unanswered';
+                        } else if (isCorrect) {
+                            reviewClass = 'correct';
+                        }
+                        
+                        return `
+                            <div class="answer-review ${reviewClass}">
+                                <div class="review-question">${index + 1}. ${q.question}</div>
+                                <div class="review-answer">
+                                    ${!wasAnswered ? 
+                                        'No answer given ⏰' : 
+                                        `Your answer: ${q.options[userAnswer]} ${isCorrect ? '✓' : '✗'}`
+                                    }
+                                    ${wasAnswered && !isCorrect ? `<br>Correct answer: ${q.options[q.correct]}` : ''}
+                                    ${!wasAnswered ? `<br>Correct answer: ${q.options[q.correct]}` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                
+                <div class="quiz-actions">
+                    ${passed ? 
+                        '<button class="quiz-btn success" onclick="revealFinalFlag()">🏆 Claim Your Final Flag!</button>' : 
+                        '<button class="quiz-btn retry" onclick="retryQuiz()">🔄 Try Again</button>'
+                    }
+                </div>
+            `;
+            
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function retryQuiz() {
+            // Reset timer
+            stopTimer();
+            timeRemaining = 600; // Reset to 10 minutes
+            
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            userAnswers = [];
+            
+            document.getElementById('quiz-results').style.display = 'none';
+            document.getElementById('quiz-timer').style.display = 'none';
+            document.getElementById('quiz-intro').style.display = 'block';
+        }
+        
+        function revealFinalFlag() {
+            document.getElementById('final-flag-display').style.display = 'block';
+            document.getElementById('final-flag-display').scrollIntoView({ behavior: 'smooth' });
+            
+            // Add extra celebration for completing everything
+            createCelebration();
+            setTimeout(createCelebration, 1000);
+        }
+        
+        function createCelebration() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const celebration = document.createElement('div');
+                    celebration.textContent = ['🎉', '🎊', '✨', '🌟', '🎆'][Math.floor(Math.random() * 5)];
+                    celebration.style.cssText = `
+                        position: fixed;
+                        font-size: 2rem;
+                        z-index: 1000;
+                        pointer-events: none;
+                        animation: celebrate 3s ease-out forwards;
+                        left: ${Math.random() * 100}%;
+                        top: ${Math.random() * 100}%;
+                    `;
+                    
+                    document.body.appendChild(celebration);
+                    
+                    setTimeout(() => celebration.remove(), 3000);
+                }, i * 100);
+            }
+            
+            // Add celebration animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes celebrate {
+                    0% { transform: scale(0) rotate(0deg); opacity: 1; }
+                    50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+                    100% { transform: scale(0) rotate(360deg); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Add some dynamic hints
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight layer 1 hint
+            setTimeout(() => {
+                const layer1 = document.getElementById('layer1');
+                layer1.style.animation = 'pulse 2s ease-in-out 3';
+            }, 3000);
+            
+            // Add pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.02); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+        
+        // Auto-fill hints for testing (remove in production)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F1') {
+                e.preventDefault();
+                document.getElementById('layer1-input').value = 'ALPHA-7';
+                document.getElementById('layer2-input').value = 'BETA-9';
+                document.getElementById('layer3-input').value = 'GAMMA-1';
+                document.getElementById('layer4-input').value = 'GAMMA-1';
+                document.getElementById('layer5-input').value = 'DELTA-5';
+                document.getElementById('layer6-input').value = 'ECHO-4';
+                console.log('Debug: Auto-filled all answers');
+            }
+        });
+        
+        // Timer Functions
+        function startTimer() {
+            quizTimer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(quizTimer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const timeDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const countdownElement = document.getElementById('timer-countdown');
+            const progressElement = document.getElementById('timer-progress');
+            
+            countdownElement.textContent = timeDisplay;
+            
+            // Update progress bar (decreasing width as time runs out)
+            const progressPercentage = (timeRemaining / 600) * 100;
+            progressElement.style.width = progressPercentage + '%';
+            
+            // Add warning colors
+            if (timeRemaining <= 60) {
+                countdownElement.className = 'timer-countdown danger';
+            } else if (timeRemaining <= 180) {
+                countdownElement.className = 'timer-countdown warning';
+            } else {
+                countdownElement.className = 'timer-countdown';
+            }
+        }
+        
+        function timeUp() {
+            alert('⏰ Time is up! The quiz will be auto-submitted with your current answers.');
+            
+            // Fill remaining answers as unanswered
+            while (userAnswers.length < quizQuestions.length) {
+                userAnswers.push(-1); // -1 indicates no answer
+            }
+            
+            showResults();
+        }
+        
+        function stopTimer() {
+            if (quizTimer) {
+                clearInterval(quizTimer);
+                quizTimer = null;
+            }
+        }
+    </script>
+</body>
+</html>

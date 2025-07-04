@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrambled Alien Code - Cyber Defense CTF</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .challenge-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .challenge-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .challenge-content {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .obfuscated-code {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            padding: 2rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            border: 3px solid #9b59b6;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .obfuscated-code::before {
+            content: '🔒 OBFUSCATED JAVASCRIPT CODE 🔒';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #9b59b6;
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .code-content {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(155, 89, 182, 0.1);
+            border-radius: 5px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .deobfuscation-tools {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+        
+        .console-output {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #00ff00;
+            min-height: 100px;
+        }
+        
+        .hint-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+        
+        .js-info {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .alien-character {
+            font-size: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .tool-button {
+            background: #e74c3c;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0.5rem;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .tool-button:hover {
+            background: #c0392b;
+        }
+        
+        .online-tools {
+            background: rgba(0, 123, 255, 0.1);
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .tool-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0.5rem;
+            transition: background 0.3s;
+        }
+        
+        .tool-link:hover {
+            background: #0056b3;
+        }
+        
+        .success-box {
+            background: rgba(40, 167, 69, 0.1);
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .interactive-section {
+            background: rgba(108, 117, 125, 0.1);
+            border: 2px solid #6c757d;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="challenge-container">
+        <button class="btn btn-secondary back-button" onclick="window.close()">
+            ← Back to Game
+        </button>
+        
+        <div class="challenge-header">
+            <h1>🛸 Scrambled Alien Code</h1>
+            <p>Unscramble the alien's obfuscated JavaScript!</p>
+            <div class="difficulty-badge intermediate">Intermediate</div>
+        </div>
+        
+        <div class="challenge-content">
+            <div class="alien-character">🛸</div>
+            <h2>🔍 The Scrambled Code</h2>
+            <p>Outstanding work so far, cyber defender! The aliens have gotten smarter about hiding their secrets. They've started using code obfuscation to make their JavaScript harder to read and understand.</p>
+            
+            <p>Your mission: Deobfuscate the alien's scrambled JavaScript code to reveal the hidden flag!</p>
+            
+            <div class="js-info">
+                <h3>🔧 What is Code Obfuscation?</h3>
+                <p>Code obfuscation is a technique used to make code difficult to understand by:</p>
+                <ul>
+                    <li>Renaming variables to meaningless names</li>
+                    <li>Adding unnecessary complexity</li>
+                    <li>Encoding strings and values</li>
+                    <li>Minifying and compressing code</li>
+                </ul>
+                <p>It's often used to protect intellectual property, but malware also uses it to hide malicious code!</p>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🔒 Obfuscated Alien Code</h2>
+            <div class="obfuscated-code">
+                <div class="code-content">
+                    <pre id="obfuscated-code">
+var _0x1234 = ['javascript_detective', 'FLAG{', '}', 'log', 'console'];
+var _0x5678 = function(_0x9abc, _0x1def) {
+    return _0x9abc + _0x1def;
+};
+var _0x2345 = function(_0x3456, _0x4567) {
+    return _0x3456[_0x4567];
+};
+var _0x6789 = _0x5678(_0x2345(_0x1234, 1), _0x2345(_0x1234, 0));
+var _0x7890 = _0x5678(_0x6789, _0x2345(_0x1234, 2));
+window[_0x2345(_0x1234, 4)][_0x2345(_0x1234, 3)](_0x7890);
+                    </pre>
+                </div>
+            </div>
+            
+            <div class="hint-box">
+                <h3>💡 Hint</h3>
+                <p>To deobfuscate this code, you need to understand what each variable and function does:</p>
+                <ul>
+                    <li><strong>_0x1234</strong> - This looks like an array of strings</li>
+                    <li><strong>_0x5678</strong> - This appears to be a function that adds two things together</li>
+                    <li><strong>_0x2345</strong> - This seems to get an item from an array at a specific index</li>
+                </ul>
+                <p>Try tracing through the code step by step, or use the browser's developer console to run it!</p>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🔧 Deobfuscation Tools</h2>
+            <div class="deobfuscation-tools">
+                <h3>🛠️ Interactive Code Analyzer</h3>
+                <p>Use these tools to help understand the obfuscated code:</p>
+                
+                <button class="tool-button" onclick="runObfuscatedCode()">
+                    🚀 Run Code in Console
+                </button>
+                
+                <button class="tool-button" onclick="analyzeVariables()">
+                    🔍 Analyze Variables
+                </button>
+                
+                <button class="tool-button" onclick="deobfuscateStep()">
+                    📝 Step-by-Step Deobfuscation
+                </button>
+                
+                <div class="console-output" id="console-output">
+                    Click a button above to start analyzing the code...
+                </div>
+            </div>
+            
+            <div class="interactive-section">
+                <h3>🎯 Manual Deobfuscation Challenge</h3>
+                <p>Try to manually deobfuscate the code by filling in what each variable represents:</p>
+                
+                <div style="margin: 1rem 0;">
+                    <label>_0x1234 = </label>
+                    <input type="text" id="array-guess" placeholder="What is this array?" style="width: 300px; padding: 0.5rem;">
+                </div>
+                
+                <div style="margin: 1rem 0;">
+                    <label>Final result = </label>
+                    <input type="text" id="result-guess" placeholder="What does the code output?" style="width: 300px; padding: 0.5rem;">
+                </div>
+                
+                <button class="tool-button" onclick="checkGuess()">
+                    ✅ Check Answer
+                </button>
+            </div>
+            
+            <div class="online-tools">
+                <h3>🌐 Online Deobfuscation Tools</h3>
+                <p>If you want to try online tools, here are some options:</p>
+                <a href="https://deobfuscate.io/" target="_blank" class="tool-link">Deobfuscate.io</a>
+                <a href="https://lelinhtinh.github.io/de4js/" target="_blank" class="tool-link">de4js</a>
+                <a href="https://beautifier.io/" target="_blank" class="tool-link">Beautifier.io</a>
+                <p><strong>Note:</strong> For this challenge, you can solve it using the built-in tools above or your browser's console!</p>
+            </div>
+        </div>
+        
+        <div class="success-box" id="success-box">
+            <h3>🎉 Deobfuscation Successful!</h3>
+            <p>You've successfully deobfuscated the alien code!</p>
+            <div id="flag-display" style="background: #28a745; color: white; padding: 1rem; border-radius: 5px; margin: 1rem 0; font-family: 'Courier New', monospace; font-size: 1.2rem;">
+                <!-- Flag will be displayed here -->
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>📝 What You've Learned</h2>
+            <ul>
+                <li>Understanding JavaScript obfuscation techniques</li>
+                <li>How to analyze and reverse engineer obfuscated code</li>
+                <li>Using browser developer tools for code analysis</li>
+                <li>Step-by-step deobfuscation methodology</li>
+            </ul>
+            
+            <h2>🔐 Real-World Applications</h2>
+            <p>Code deobfuscation skills are valuable for:</p>
+            <ul>
+                <li><strong>Malware analysis:</strong> Understanding how malicious code works</li>
+                <li><strong>Reverse engineering:</strong> Analyzing software for vulnerabilities</li>
+                <li><strong>Web security:</strong> Examining suspicious JavaScript on websites</li>
+                <li><strong>Bug bounty hunting:</strong> Finding hidden functionality in applications</li>
+                <li><strong>Digital forensics:</strong> Analyzing evidence from compromised systems</li>
+            </ul>
+            
+            <p><strong>Remember:</strong> Only perform these techniques on systems you own or have explicit permission to analyze!</p>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎮 Next Steps</h2>
+            <p>Once you've deobfuscated the code and found the flag, head back to the main game page and submit it in the flag submission form. Select "Scrambled Alien Code" from the dropdown and enter the flag you found!</p>
+            
+            <button class="btn btn-primary" onclick="window.close()">
+                🚀 Submit Flag on Main Page
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Store the obfuscated code
+        const obfuscatedCode = `
+var _0x1234 = ['javascript_detective', 'FLAG{', '}', 'log', 'console'];
+var _0x5678 = function(_0x9abc, _0x1def) {
+    return _0x9abc + _0x1def;
+};
+var _0x2345 = function(_0x3456, _0x4567) {
+    return _0x3456[_0x4567];
+};
+var _0x6789 = _0x5678(_0x2345(_0x1234, 1), _0x2345(_0x1234, 0));
+var _0x7890 = _0x5678(_0x6789, _0x2345(_0x1234, 2));
+window[_0x2345(_0x1234, 4)][_0x2345(_0x1234, 3)](_0x7890);
+        `;
+        
+        function runObfuscatedCode() {
+            const output = document.getElementById('console-output');
+            output.innerHTML = `
+                <div style="color: #00ff00;">$ Running obfuscated code...</div>
+                <div style="color: #ffffff;">Executing JavaScript...</div>
+                <div style="color: #ffd700;">Output: FLAG{javascript_detective}</div>
+                <div style="color: #00ff00;">$ Code execution complete!</div>
+                <div style="color: #ffffff; margin-top: 1rem;">🎉 The obfuscated code outputs the flag when executed!</div>
+            `;
+            
+            // Show success box
+            document.getElementById('success-box').style.display = 'block';
+            document.getElementById('flag-display').innerHTML = '<strong>🏁 FLAG{javascript_detective}</strong>';
+        }
+        
+        function analyzeVariables() {
+            const output = document.getElementById('console-output');
+            output.innerHTML = `
+                <div style="color: #00ff00;">$ Analyzing variables...</div>
+                <div style="color: #ffffff;">
+                    <br>_0x1234 = ['javascript_detective', 'FLAG{', '}', 'log', 'console']
+                    <br>This is an array containing strings!
+                    <br>
+                    <br>_0x5678 = function that adds two parameters together
+                    <br>_0x2345 = function that gets array element at index
+                    <br>
+                    <br>_0x6789 = _0x2345(_0x1234, 1) + _0x2345(_0x1234, 0)
+                    <br>         = 'FLAG{' + 'javascript_detective'
+                    <br>         = 'FLAG{javascript_detective'
+                    <br>
+                    <br>_0x7890 = _0x6789 + _0x2345(_0x1234, 2)
+                    <br>         = 'FLAG{javascript_detective' + '}'
+                    <br>         = 'FLAG{javascript_detective}'
+                </div>
+                <div style="color: #ffd700; margin-top: 1rem;">The code constructs the flag: FLAG{javascript_detective}</div>
+            `;
+        }
+        
+        function deobfuscateStep() {
+            const output = document.getElementById('console-output');
+            output.innerHTML = `
+                <div style="color: #00ff00;">$ Step-by-step deobfuscation...</div>
+                <div style="color: #ffffff;">
+                    <br><strong>Step 1:</strong> Identify the array
+                    <br>_0x1234 = ['javascript_detective', 'FLAG{', '}', 'log', 'console']
+                    <br>
+                    <br><strong>Step 2:</strong> Understand the functions
+                    <br>_0x5678 = concatenation function (a + b)
+                    <br>_0x2345 = array access function (array[index])
+                    <br>
+                    <br><strong>Step 3:</strong> Trace the execution
+                    <br>_0x6789 = 'FLAG{' + 'javascript_detective' = 'FLAG{javascript_detective'
+                    <br>_0x7890 = 'FLAG{javascript_detective' + '}' = 'FLAG{javascript_detective}'
+                    <br>
+                    <br><strong>Step 4:</strong> Final action
+                    <br>console.log('FLAG{javascript_detective}')
+                </div>
+                <div style="color: #ffd700; margin-top: 1rem;">🎯 Deobfuscated! The flag is: FLAG{javascript_detective}</div>
+            `;
+            
+            // Show success box
+            document.getElementById('success-box').style.display = 'block';
+            document.getElementById('flag-display').innerHTML = '<strong>🏁 FLAG{javascript_detective}</strong>';
+        }
+        
+        function checkGuess() {
+            const arrayGuess = document.getElementById('array-guess').value.toLowerCase();
+            const resultGuess = document.getElementById('result-guess').value.toLowerCase();
+            const output = document.getElementById('console-output');
+            
+            let feedback = '<div style="color: #00ff00;">$ Checking your answers...</div>';
+            
+            if (arrayGuess.includes('javascript_detective') || arrayGuess.includes('flag') || arrayGuess.includes('array')) {
+                feedback += '<div style="color: #ffd700;">✅ Good! You identified the array correctly!</div>';
+            } else {
+                feedback += '<div style="color: #ff6b6b;">❌ The array contains strings including parts of the flag.</div>';
+            }
+            
+            if (resultGuess.includes('flag{javascript_detective}')) {
+                feedback += '<div style="color: #ffd700;">✅ Excellent! You found the flag!</div>';
+                feedback += '<div style="color: #ffffff; margin-top: 1rem;">🎉 Complete answer: FLAG{javascript_detective}</div>';
+                
+                // Show success box
+                document.getElementById('success-box').style.display = 'block';
+                document.getElementById('flag-display').innerHTML = '<strong>🏁 FLAG{javascript_detective}</strong>';
+            } else {
+                feedback += '<div style="color: #ff6b6b;">❌ Keep trying! The code outputs a flag.</div>';
+                feedback += '<div style="color: #ffffff;">Hint: The code concatenates strings from the array to form FLAG{something}</div>';
+            }
+            
+            output.innerHTML = feedback;
+        }
+        
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight the code when clicked
+            const codeElement = document.getElementById('obfuscated-code');
+            codeElement.addEventListener('click', function() {
+                this.style.background = 'rgba(155, 89, 182, 0.2)';
+                setTimeout(() => {
+                    this.style.background = 'rgba(155, 89, 182, 0.1)';
+                }, 500);
+            });
+            
+            // Auto-run a hint after a few seconds
+            setTimeout(() => {
+                const output = document.getElementById('console-output');
+                output.innerHTML = `
+                    <div style="color: #ffd700;">💡 Hint: Try clicking "Run Code in Console" to see what happens!</div>
+                    <div style="color: #ffffff;">Or use "Analyze Variables" to understand the structure step by step.</div>
+                `;
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

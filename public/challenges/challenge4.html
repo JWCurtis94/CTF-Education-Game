@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alien Database Breach - Cyber Defense CTF</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .challenge-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .challenge-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .challenge-content {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .login-form {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            padding: 2rem;
+            border-radius: 10px;
+            border: 3px solid #e74c3c;
+            margin: 2rem 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .login-form h3 {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ecf0f1;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #34495e;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 1rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login-button:hover {
+            background: #c0392b;
+        }
+        
+        .result-area {
+            background: rgba(39, 174, 96, 0.1);
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .hint-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+        
+        .sql-info {
+            background: rgba(0, 123, 255, 0.1);
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .code-example {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #00ff00;
+        }
+        
+        .alien-character {
+            font-size: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .database-visual {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .table-demo {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .success-message {
+            background: rgba(39, 174, 96, 0.9);
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .error-message {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="challenge-container">
+        <button class="btn btn-secondary back-button" onclick="window.close()">
+            ← Back to Game
+        </button>
+        
+        <div class="challenge-header">
+            <h1>🛸 Alien Database Breach</h1>
+            <p>Infiltrate the alien user database!</p>
+            <div class="difficulty-badge intermediate">Intermediate</div>
+        </div>
+        
+        <div class="challenge-content">
+            <div class="alien-character">🛸</div>
+            <h2>🔒 The Alien User Database</h2>
+            <p>Excellent progress, cyber defender! We've located the alien's user authentication system. Our intelligence suggests their login system has a vulnerability that we can exploit.</p>
+            
+            <p>Your mission: Use SQL injection to bypass the alien's login system and access their classified user database!</p>
+            
+            <div class="sql-info">
+                <h3>💾 What is SQL Injection?</h3>
+                <p>SQL injection is a security vulnerability where malicious SQL code is inserted into application queries. It happens when user input is not properly sanitized before being used in database queries.</p>
+                <p>For example, if a login form creates a query like this:</p>
+                <div class="code-example">
+                    SELECT * FROM users WHERE username = 'admin' AND password = 'password123'
+                </div>
+                <p>An attacker might enter special characters to change the query's logic!</p>
+            </div>
+            
+            <div class="hint-box">
+                <h3>💡 Hint</h3>
+                <p>Try using the classic SQL injection payload in the password field:</p>
+                <div class="code-example">
+                    ' OR '1'='1
+                </div>
+                <p>This works because it makes the condition always true! The resulting query becomes:</p>
+                <div class="code-example">
+                    SELECT * FROM users WHERE username = 'admin' AND password = '' OR '1'='1'
+                </div>
+                <p>Since '1'='1' is always true, the login will succeed!</p>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🔐 Alien Login System</h2>
+            <div class="login-form">
+                <h3>👽 ALIEN DATABASE ACCESS</h3>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" value="admin" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" placeholder="Enter password or SQL injection payload">
+                    </div>
+                    <button type="submit" class="login-button">🚀 ACCESS DATABASE</button>
+                </form>
+                
+                <div id="success-message" class="success-message">
+                    <h4>🎉 Login Successful!</h4>
+                    <p>Database access granted. Retrieving classified data...</p>
+                </div>
+                
+                <div id="error-message" class="error-message">
+                    <h4>❌ Access Denied</h4>
+                    <p>Invalid credentials. Try using SQL injection techniques!</p>
+                </div>
+                
+                <div class="result-area" id="result-area">
+                    <p>🔒 Enter credentials to access the alien database...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <div class="database-visual">
+                <h3>🗄️ Alien Database Structure</h3>
+                <div class="table-demo">
+                    <strong>USERS TABLE:</strong><br>
+                    +----+------------------+------------------+<br>
+                    | ID | USERNAME         | SECRET           |<br>
+                    +----+------------------+------------------+<br>
+                    | 1  | alien_commander  | invasion_plans   |<br>
+                    | 2  | alien_scientist  | weapon_blueprints|<br>
+                    | 3  | admin           | [CLASSIFIED]     |<br>
+                    +----+------------------+------------------+
+                </div>
+            </div>
+            
+            <div class="warning-box">
+                <h3>⚠️ Ethical Reminder</h3>
+                <p>SQL injection is a serious security vulnerability that can lead to:</p>
+                <ul>
+                    <li>Data theft and privacy breaches</li>
+                    <li>Database corruption or deletion</li>
+                    <li>Unauthorized access to sensitive systems</li>
+                    <li>Financial losses and legal consequences</li>
+                </ul>
+                <p><strong>Always use these techniques responsibly and only on systems you own or have explicit permission to test!</strong></p>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>📝 Common SQL Injection Payloads</h2>
+            <p>Here are some examples of SQL injection payloads you can try:</p>
+            
+            <div class="code-example">
+                <strong>Basic OR injection:</strong><br>
+                ' OR '1'='1<br>
+                ' OR 1=1--<br>
+                ' OR '1'='1'--
+            </div>
+            
+            <div class="code-example">
+                <strong>Comment-based injection:</strong><br>
+                ' OR '1'='1' /*<br>
+                admin'--<br>
+                ' OR 1=1#
+            </div>
+            
+            <div class="code-example">
+                <strong>Union-based injection:</strong><br>
+                ' UNION SELECT 1,2,3--<br>
+                ' UNION SELECT username,password FROM users--
+            </div>
+            
+            <p><strong>For this challenge, try the basic OR injection first!</strong></p>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>📝 What You've Learned</h2>
+            <ul>
+                <li>Understanding SQL injection vulnerabilities</li>
+                <li>How to bypass authentication using SQL injection</li>
+                <li>The importance of input validation and sanitization</li>
+                <li>Common SQL injection payloads and techniques</li>
+            </ul>
+            
+            <h2>🔐 Real-World Prevention</h2>
+            <p>To prevent SQL injection in real applications:</p>
+            <ul>
+                <li><strong>Use parameterized queries/prepared statements</strong></li>
+                <li><strong>Validate and sanitize all user input</strong></li>
+                <li><strong>Use least privilege principles for database accounts</strong></li>
+                <li><strong>Implement proper error handling</strong></li>
+                <li><strong>Regular security testing and code reviews</strong></li>
+            </ul>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎮 Next Steps</h2>
+            <p>Once you've successfully bypassed the login and found the flag, head back to the main game page and submit it in the flag submission form. Select "Alien Database Breach" from the dropdown and enter the flag you found!</p>
+            
+            <button class="btn btn-primary" onclick="window.close()">
+                🚀 Submit Flag on Main Page
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultArea = document.getElementById('result-area');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Hide previous messages
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/alien-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    successMessage.style.display = 'block';
+                    resultArea.innerHTML = `
+                        <h4>🎉 DATABASE ACCESS GRANTED!</h4>
+                        <p><strong>SQL Injection Successful!</strong></p>
+                        <p>Retrieved classified alien data:</p>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+                            <strong>🏁 FLAG FOUND:</strong><br>
+                            <span style="color: #27ae60; font-size: 1.2rem; font-weight: bold;">${data.flag}</span>
+                        </div>
+                        <p><strong>Additional Data Retrieved:</strong></p>
+                        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 5px;">
+                            ${data.data.map(user => `
+                                <div style="margin-bottom: 0.5rem;">
+                                    👤 ${user.username}: ${user.secret}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <p style="color: #27ae60; font-weight: bold;">
+                            🎊 Congratulations! You've successfully performed SQL injection!
+                        </p>
+                    `;
+                    
+                    // Add celebration effect
+                    resultArea.style.animation = 'pulse 1s ease-in-out 3';
+                    
+                } else {
+                    errorMessage.style.display = 'block';
+                    resultArea.innerHTML = `
+                        <h4>❌ Access Denied</h4>
+                        <p>Invalid credentials detected.</p>
+                        <p><strong>Hint:</strong> Try using SQL injection in the password field!</p>
+                        <p>Common payload: <code>' OR '1'='1</code></p>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMessage.style.display = 'block';
+                resultArea.innerHTML = `
+                    <h4>❌ Connection Error</h4>
+                    <p>Unable to connect to alien database.</p>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        });
+        
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add some interactivity to the hint
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordField = document.getElementById('password');
+            passwordField.addEventListener('focus', function() {
+                if (!this.value) {
+                    this.placeholder = "Try: ' OR '1'='1";
+                }
+            });
+        });
+    </script>
+</body>
+</html>

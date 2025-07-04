@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hidden Alien Files - Cyber Defense CTF</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .challenge-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .challenge-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .challenge-content {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .file-browser {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            padding: 2rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            border: 3px solid #3498db;
+            margin: 2rem 0;
+        }
+        
+        .file-browser h3 {
+            color: #3498db;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .file-link {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0.5rem;
+            transition: background 0.3s;
+        }
+        
+        .file-link:hover {
+            background: #2980b9;
+        }
+        
+        .hint-box {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+        
+        .robots-demo {
+            background: rgba(108, 117, 125, 0.1);
+            border: 2px solid #6c757d;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .terminal-window {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .terminal-prompt {
+            color: #00ff00;
+        }
+        
+        .terminal-output {
+            color: #ffffff;
+            margin-left: 1rem;
+        }
+        
+        .alien-character {
+            font-size: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .info-box {
+            background: rgba(0, 123, 255, 0.1);
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .success-box {
+            background: rgba(40, 167, 69, 0.1);
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="challenge-container">
+        <button class="btn btn-secondary back-button" onclick="window.close()">
+            ← Back to Game
+        </button>
+        
+        <div class="challenge-header">
+            <h1>🛸 Hidden Alien Files</h1>
+            <p>Discover the alien's secret directories!</p>
+            <div class="difficulty-badge easy">Easy</div>
+        </div>
+        
+        <div class="challenge-content">
+            <div class="alien-character">🛸</div>
+            <h2>🔍 The Secret File System</h2>
+            <p>Great work on the previous challenges! Now we need to dig deeper into the alien's file system. Intelligence suggests they have hidden directories that contain classified information.</p>
+            
+            <p>Your mission: Find the alien's secret directory by checking a special file that web servers often use to tell robots (like search engines) where they shouldn't go.</p>
+            
+            <div class="hint-box">
+                <h3>💡 Hint</h3>
+                <p>Web servers often have a file called <strong>robots.txt</strong> that tells search engines which pages or directories they should not index. This file is usually located at the root of the website (like <code>example.com/robots.txt</code>).</p>
+                <p>Try visiting <strong>/robots.txt</strong> on this server!</p>
+            </div>
+            
+            <div class="info-box">
+                <h3>🤖 What is robots.txt?</h3>
+                <p>The robots.txt file is a simple text file that tells web crawlers (like Google's search bot) which pages or directories they should avoid. It's part of the "Robots Exclusion Protocol."</p>
+                <p>However, it's important to note that robots.txt is just a suggestion - it doesn't actually prevent access to those files!</p>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🌐 Alien Web Server</h2>
+            <div class="file-browser">
+                <h3>🖥️ Available Files:</h3>
+                <p>Current directory: /</p>
+                <p>Files you can access:</p>
+                <div style="margin-top: 1rem;">
+                    <a href="/robots.txt" class="file-link" target="_blank">📄 robots.txt</a>
+                    <a href="/index.html" class="file-link" target="_blank">🏠 index.html</a>
+                    <a href="/public/" class="file-link" target="_blank">📁 public/</a>
+                </div>
+            </div>
+            
+            <div class="robots-demo">
+                <h3>📄 Example robots.txt file:</h3>
+                <div class="terminal-window">
+                    <div class="terminal-prompt">$ cat robots.txt</div>
+                    <div class="terminal-output">
+                        User-agent: *<br>
+                        Disallow: /admin/<br>
+                        Disallow: /private/<br>
+                        Disallow: /secret-files/<br>
+                        <br>
+                        # This tells search engines not to index these directories
+                    </div>
+                </div>
+                <p><strong>Remember:</strong> Just because a directory is "disallowed" doesn't mean you can't access it directly!</p>
+            </div>
+            
+            <div class="warning-box">
+                <h3>⚠️ Ethical Reminder</h3>
+                <p>In the real world, always make sure you have permission before exploring directories on someone else's server. What we're doing here is educational and on a system designed for learning!</p>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎯 Your Mission Steps</h2>
+            <ol>
+                <li><strong>Click on the robots.txt link above</strong> to view the alien's robots.txt file</li>
+                <li><strong>Look for "Disallow" entries</strong> - these show directories the aliens don't want found</li>
+                <li><strong>Try visiting those directories</strong> by typing them in your browser</li>
+                <li><strong>Find the flag</strong> hidden in one of the secret directories</li>
+            </ol>
+            
+            <div class="success-box">
+                <h3>🎉 Success Tips</h3>
+                <p>When you find a hidden directory, you might see:</p>
+                <ul>
+                    <li>A webpage with the flag displayed</li>
+                    <li>A directory listing with more files to explore</li>
+                    <li>The flag hidden in the robots.txt file itself</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>📝 What You've Learned</h2>
+            <ul>
+                <li>How to find and read robots.txt files</li>
+                <li>Understanding web server directory structure</li>
+                <li>The concept of "security through obscurity" (and why it's not really secure)</li>
+                <li>Basic web reconnaissance techniques</li>
+            </ul>
+            
+            <h2>🔐 Real-World Application</h2>
+            <p>In real cybersecurity work, checking robots.txt is often one of the first steps in web reconnaissance:</p>
+            <ul>
+                <li><strong>Bug bounty hunting:</strong> Find hidden admin panels or development directories</li>
+                <li><strong>Penetration testing:</strong> Discover forgotten or unprotected areas</li>
+                <li><strong>SEO auditing:</strong> Make sure important pages aren't accidentally blocked</li>
+                <li><strong>Competitive research:</strong> See what areas competitors want to keep private</li>
+            </ul>
+            
+            <p><strong>Remember:</strong> Just because something is in robots.txt doesn't mean it's secure. Proper access controls and authentication are needed for real security!</p>
+        </div>
+        
+        <div class="challenge-content">
+            <h2>🎮 Next Steps</h2>
+            <p>Once you've found the flag in the hidden directory, head back to the main game page and submit it in the flag submission form. Select "Hidden Alien Files" from the dropdown and enter the flag you found!</p>
+            
+            <button class="btn btn-primary" onclick="window.close()">
+                🚀 Submit Flag on Main Page
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Add some interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight the robots.txt link
+            const robotsLink = document.querySelector('a[href="/robots.txt"]');
+            robotsLink.style.animation = 'pulse 2s infinite';
+            
+            // Add pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
