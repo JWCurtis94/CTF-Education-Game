@@ -111,14 +111,8 @@ function loadGameData() {
   try {
     const teamsData = fs.readFileSync(path.join(dataDir, 'teams.json'), 'utf8');
     teams = JSON.parse(teamsData);
-    
-    // Ensure teams is a valid object
-    if (!teams || typeof teams !== 'object') {
-      teams = {};
-    }
   } catch (error) {
     console.log('No saved teams data found, starting fresh');
-    teams = {};
   }
 }
 
@@ -146,7 +140,7 @@ app.get('/admin', (req, res) => {
 app.get('/challenge/:id', (req, res) => {
   const challengeId = parseInt(req.params.id);
   
-  // Check if gameState and challenges exist
+  // Ensure gameState and challenges are properly initialized
   if (!gameState || !gameState.challenges || !Array.isArray(gameState.challenges)) {
     return res.status(500).send('Server configuration error');
   }
@@ -174,7 +168,7 @@ app.get('/challenge/:id', (req, res) => {
       `);
     }
     
-    // Check if teams object exists and is properly initialized
+    // Ensure teams object is properly initialized
     if (!teams || typeof teams !== 'object') {
       teams = {};
     }
@@ -252,18 +246,8 @@ app.post('/api/teams', (req, res) => {
 app.post('/api/submit-flag', (req, res) => {
   const { teamName, challengeId, flag } = req.body;
   
-  // Check if teams object exists and is properly initialized
-  if (!teams || typeof teams !== 'object') {
-    teams = {};
-  }
-  
   if (!teams[teamName]) {
     return res.status(400).json({ error: 'Team not found' });
-  }
-  
-  // Check if gameState and challenges exist
-  if (!gameState || !gameState.challenges || !Array.isArray(gameState.challenges)) {
-    return res.status(500).json({ error: 'Server configuration error' });
   }
   
   const challenge = gameState.challenges.find(c => c.id === parseInt(challengeId));
