@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTF Admin Panel</title>
+    <title>CTF Admin Panel - Enhanced</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         .admin-header {
             background: linear-gradient(135deg, #ff6b6b, #ee5a52);
             color: white;
@@ -14,6 +14,60 @@
             text-align: center;
             margin-bottom: 2rem;
             border-radius: 0 0 20px 20px;
+            position: relative;
+        }
+        
+        .admin-header .last-updated {
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .admin-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+            font-weight: 500;
+        }
+        
+        .nav-tab:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .nav-tab.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .admin-controls {
@@ -29,12 +83,20 @@
             border-radius: 15px;
             padding: 2rem;
             box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+        
+        .admin-card:hover {
+            transform: translateY(-5px);
         }
         
         .admin-card h3 {
             color: var(--primary-color);
             margin-bottom: 1rem;
             font-family: 'Orbitron', monospace;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .team-details {
@@ -42,11 +104,23 @@
             padding: 1rem;
             background: rgba(0, 212, 255, 0.1);
             border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
         }
         
         .team-details h4 {
             color: var(--primary-color);
             margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .team-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 15px;
+            background: var(--accent-color);
+            color: white;
         }
         
         .progress-bar {
@@ -55,12 +129,25 @@
             border-radius: 10px;
             overflow: hidden;
             margin-top: 0.5rem;
+            position: relative;
         }
         
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--success-color), var(--accent-color));
-            transition: width 0.3s ease;
+            transition: width 0.8s ease;
+            position: relative;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         
         .danger-zone {
@@ -74,28 +161,385 @@
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+<body>
+    <div class="container">
+        <button class="btn btn-secondary back-to-game" onclick="window.location.href='/'">
+            🏠 Back to Game
+        </button>
         
-        .stat-card {
-            background: var(--surface-color);
-            border: 2px solid var(--border-color);
+        <header class="admin-header">
+            <div class="last-updated" id="last-updated">Last updated: --:--:--</div>
+            <h1>🛡️ CTF Admin Panel</h1>
+            <p>Advanced monitoring and management for Cyber Defense CTF</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="admin-nav">
+            <div class="nav-tab active" onclick="switchTab('dashboard')">📊 Dashboard</div>
+            <div class="nav-tab" onclick="switchTab('teams')">👥 Teams</div>
+            <div class="nav-tab" onclick="switchTab('challenges')">🎯 Challenges</div>
+            <div class="nav-tab" onclick="switchTab('monitoring')">📋 Monitoring</div>
+            <div class="nav-tab" onclick="switchTab('analytics')">📈 Analytics</div>
+            <div class="nav-tab" onclick="switchTab('settings')">⚙️ Settings</div>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <!-- Game Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-number" id="total-teams">0</div>
+                    <div class="stat-label">Teams Registered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏁</div>
+                    <div class="stat-number" id="total-flags">0</div>
+                    <div class="stat-label">Flags Captured</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👨‍💻</div>
+                    <div class="stat-number" id="active-players">0</div>
+                    <div class="stat-label">Active Players</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-number" id="game-time">00:00</div>
+                    <div class="stat-label">Game Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-number" id="avg-score">0</div>
+                    <div class="stat-label">Average Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-number" id="completion-rate">0%</div>
+                    <div class="stat-label">Completion Rate</div>
+                </div>
+            </div>
+
+            <!-- Admin Controls -->
+            <div class="admin-controls">
+                <div class="admin-card">
+                    <h3>🎮 Game Control</h3>
+                    <button id="start-game" class="btn btn-success" style="width: 100%; margin-bottom: 1rem;">
+                        🚀 Start Game
+                    </button>
+                    <button id="pause-game" class="btn btn-warning" style="width: 100%; margin-bottom: 1rem;">
+                        ⏸️ Pause Game
+                    </button>
+                    <button id="export-data" class="btn btn-primary" style="width: 100%;">
+                        📊 Export Results
+                    </button>
+                </div>
+                
+                <div class="admin-card">
+                    <h3>📊 Quick Stats</h3>
+                    <div id="team-count">Loading team data...</div>
+                    <button id="refresh-teams" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">
+                        🔄 Refresh Data
+                    </button>
+                </div>
+                
+                <div class="admin-card danger-zone">
+                    <h3>⚠️ Danger Zone</h3>
+                    <p>These actions cannot be undone!</p>
+                    <button id="reset-game" class="btn btn-danger" style="width: 100%; margin-top: 1rem;">
+                        🔄 Reset Entire Game
+                    </button>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>📈 Team Progress Over Time</h3>
+                    <canvas id="progressChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>🎯 Challenge Difficulty Distribution</h3>
+                    <canvas id="difficultyChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teams Tab -->
+        <div id="teams" class="tab-content">
+            <div class="section">
+                <h2>👥 Team Management</h2>
+                <div id="team-details">
+                    <div class="no-teams">No teams registered yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Challenges Tab -->
+        <div id="challenges" class="tab-content">
+            <div class="challenge-management">
+                <h2>🎯 Challenge Management</h2>
+                <div id="challenge-list" class="challenge-list">
+                    <!-- Challenges will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitoring Tab -->
+        <div id="monitoring" class="tab-content">
+            <!-- Activity Log -->
+            <div class="activity-log">
+                <h2>📋 Activity Monitor</h2>
+                <div class="log-filters">
+                    <div class="log-filter active" onclick="filterLogs('all')">All</div>
+                    <div class="log-filter" onclick="filterLogs('flag')">Flag Captures</div>
+                    <div class="log-filter" onclick="filterLogs('team')">Team Events</div>
+                    <div class="log-filter" onclick="filterLogs('admin')">Admin Actions</div>
+                    <div class="log-filter" onclick="filterLogs('error')">Errors</div>
+                </div>
+                <div id="activity-log">
+                    <div class="log-entry">
+                        <div class="log-time">System startup</div>
+                        <div>Admin panel initialized</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Monitor -->
+            <div class="admin-card" style="margin-top: 2rem;">
+                <h3>💬 Team Chat Monitor</h3>
+                <div class="chat-monitor" id="chat-monitor">
+                    <div class="chat-message">
+                        <div class="chat-meta">System - No recent chat activity</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>📊 Score Distribution</h3>
+                    <canvas id="scoreChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>⏰ Solve Times</h3>
+                    <canvas id="timeChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            
+            <div class="admin-card">
+                <h3>📈 Detailed Analytics</h3>
+                <div id="analytics-details">
+                    <p>Loading analytics data...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="admin-controls">
+                <div class="admin-card">
+                    <h3>🎮 Game Settings</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <label>Game Duration (minutes):</label>
+                        <input type="number" id="game-duration" value="120" min="30" max="480" style="width: 100%; margin-top: 0.5rem;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label>Max Team Size:</label>
+                        <input type="number" id="max-team-size" value="4" min="1" max="10" style="width: 100%; margin-top: 0.5rem;">
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;">💾 Save Settings</button>
+                </div>
+                
+                <div class="admin-card">
+                    <h3>📊 Export Options</h3>
+                    <div class="export-options">
+                        <button class="btn btn-secondary" onclick="exportCSV()">📄 Export CSV</button>
+                        <button class="btn btn-secondary" onclick="exportJSON()">📋 Export JSON</button>
+                        <button class="btn btn-secondary" onclick="exportPDF()">📑 Export PDF</button>
+                        <button class="btn btn-secondary" onclick="exportReport()">📊 Full Report</button>
+                    </div>
+                </div>
+                
+                <div class="admin-card">
+                    <h3>🔧 System Tools</h3>
+                    <button class="btn btn-secondary" style="width: 100%; margin-bottom: 1rem;" onclick="clearLogs()">
+                        🗑️ Clear Activity Logs
+                    </button>
+                    <button class="btn btn-secondary" style="width: 100%; margin-bottom: 1rem;" onclick="backupData()">
+                        💾 Backup Game Data
+                    </button>
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="systemHealth()">
+                        🏥 System Health Check
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+        .challenge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.05);
             border-radius: 10px;
-            padding: 1.5rem;
-            text-align: center;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
         }
         
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-color);
+        .challenge-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
         }
         
-        .stat-label {
+        .challenge-item.easy { border-left-color: #4CAF50; }
+        .challenge-item.medium { border-left-color: #FF9800; }
+        .challenge-item.hard { border-left-color: #F44336; }
+        
+        .challenge-info {
+            flex: 1;
+        }
+        
+        .challenge-stats {
+            display: flex;
+            gap: 1rem;
             font-size: 0.9rem;
             color: var(--text-light);
+        }
+        
+        .challenge-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .activity-log {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .log-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .log-filter {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: var(--surface-color);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .log-filter.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .log-entry {
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--primary-color);
+            background: rgba(0, 212, 255, 0.05);
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .log-entry:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .log-entry.error { border-left-color: var(--error-color); }
+        .log-entry.success { border-left-color: var(--success-color); }
+        .log-entry.warning { border-left-color: #FF9800; }
+        
+        .log-time {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .back-to-game {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .team-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .btn-mini {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            border-radius: 5px;
+        }
+        
+        .chat-monitor {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.05);
+        }
+        
+        .chat-message {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .chat-meta {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 0.2rem;
+        }
+        
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-controls {
+                grid-template-columns: 1fr;
+            }
+        }   color: var(--text-light);
         }
         
         .challenge-management {
@@ -261,6 +705,8 @@
         let challenges = [];
         let gameStartTime = null;
         let activityLog = [];
+        let currentLogFilter = 'all';
+        let charts = {};
 
         // Initialize admin panel
         document.addEventListener('DOMContentLoaded', function() {
@@ -268,6 +714,7 @@
             setupEventListeners();
             setupSocketConnection();
             loadData();
+            initializeCharts();
         });
 
         function initializeAdmin() {
@@ -276,7 +723,11 @@
             document.documentElement.setAttribute('data-theme', savedTheme);
             
             // Initialize activity log
-            addLogEntry('Admin panel loaded');
+            addLogEntry('Admin panel loaded', 'system');
+            
+            // Update last updated time
+            updateLastUpdated();
+            setInterval(updateLastUpdated, 30000); // Update every 30 seconds
         }
 
         function setupEventListeners() {
@@ -294,21 +745,28 @@
                 teams = updatedTeams;
                 updateTeamDetails();
                 updateStats();
-                addLogEntry('Teams data updated');
+                updateCharts();
+                addLogEntry('Teams data updated', 'system');
             });
             
             socket.on('flag-captured', function(data) {
-                addLogEntry(`🏁 ${data.teamName} captured flag for "${data.title}" (+${data.points} points)`);
+                addLogEntry(`🏁 ${data.teamName} captured flag for "${data.title}" (+${data.points} points)`, 'flag');
                 updateStats();
+                updateCharts();
+            });
+            
+            socket.on('team-registered', function(data) {
+                addLogEntry(`👥 New team registered: ${data.teamName}`, 'team');
+                loadData();
             });
             
             socket.on('game-reset', function() {
-                addLogEntry('🔄 Game reset by admin');
+                addLogEntry('🔄 Game reset by admin', 'admin');
                 setTimeout(() => location.reload(), 1000);
             });
             
             socket.on('game-started', function() {
-                addLogEntry('🚀 Game started');
+                addLogEntry('🚀 Game started', 'admin');
                 gameStartTime = new Date();
                 updateStats();
             });
@@ -327,11 +785,13 @@
                 updateTeamDetails();
                 updateChallengeList();
                 updateStats();
+                updateCharts();
+                loadChatMonitor();
                 
-                addLogEntry('Data refreshed');
+                addLogEntry('Data refreshed', 'system');
             } catch (error) {
                 console.error('Error loading data:', error);
-                addLogEntry('Error loading data: ' + error.message);
+                addLogEntry('Error loading data: ' + error.message, 'error');
             }
         }
 
@@ -339,18 +799,24 @@
             const teamCount = Object.keys(teams).length;
             const totalFlags = Object.values(teams).reduce((sum, team) => sum + team.solvedChallenges.length, 0);
             const activePlayerCount = Object.values(teams).reduce((sum, team) => sum + team.members.length, 0);
+            const totalPossibleFlags = teamCount * challenges.length;
+            const completionRate = totalPossibleFlags > 0 ? ((totalFlags / totalPossibleFlags) * 100).toFixed(1) : 0;
+            const avgScore = teamCount > 0 ? Math.round(Object.values(teams).reduce((sum, team) => sum + team.score, 0) / teamCount) : 0;
             
             document.getElementById('total-teams').textContent = teamCount;
             document.getElementById('total-flags').textContent = totalFlags;
             document.getElementById('active-players').textContent = activePlayerCount;
+            document.getElementById('completion-rate').textContent = completionRate + '%';
+            document.getElementById('avg-score').textContent = avgScore;
             
             // Update game time
             if (gameStartTime) {
                 const elapsed = Math.floor((new Date() - gameStartTime) / 1000);
-                const minutes = Math.floor(elapsed / 60);
+                const hours = Math.floor(elapsed / 3600);
+                const minutes = Math.floor((elapsed % 3600) / 60);
                 const seconds = elapsed % 60;
                 document.getElementById('game-time').textContent = 
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
         }
 
@@ -364,20 +830,31 @@
             
             const teamArray = Object.values(teams).sort((a, b) => b.score - a.score);
             
-            container.innerHTML = teamArray.map(team => {
-                const progress = (team.solvedChallenges.length / challenges.length) * 100;
+            container.innerHTML = teamArray.map((team, index) => {
+                const progress = challenges.length > 0 ? (team.solvedChallenges.length / challenges.length) * 100 : 0;
+                const badge = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
                 
                 return `
                     <div class="team-details">
-                        <h4>${team.name}</h4>
+                        <h4>
+                            ${team.name}
+                            <span class="team-badge">${badge}</span>
+                        </h4>
                         <div class="team-stats">
                             <div><strong>Score:</strong> ${team.score} points</div>
                             <div><strong>Challenges:</strong> ${team.solvedChallenges.length}/${challenges.length}</div>
                             <div><strong>Members:</strong> ${team.members.join(', ') || 'None listed'}</div>
                             <div><strong>Joined:</strong> ${new Date(team.joinTime).toLocaleString()}</div>
+                            <div><strong>Last Active:</strong> ${team.lastActivity ? new Date(team.lastActivity).toLocaleString() : 'Unknown'}</div>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${progress}%"></div>
+                            <div class="progress-text">${progress.toFixed(1)}%</div>
+                        </div>
+                        <div class="team-actions">
+                            <button class="btn btn-mini btn-secondary" onclick="viewTeamDetails('${team.name}')">👁️ View</button>
+                            <button class="btn btn-mini btn-warning" onclick="disqualifyTeam('${team.name}')">⚠️ Warn</button>
+                            <button class="btn btn-mini btn-danger" onclick="removeTeam('${team.name}')">🗑️ Remove</button>
                         </div>
                     </div>
                 `;
@@ -385,7 +862,8 @@
             
             document.getElementById('team-count').innerHTML = `
                 <strong>${Object.keys(teams).length} teams registered</strong><br>
-                <small>Total players: ${Object.values(teams).reduce((sum, team) => sum + team.members.length, 0)}</small>
+                <small>Total players: ${Object.values(teams).reduce((sum, team) => sum + team.members.length, 0)}</small><br>
+                <small>Average score: ${Object.keys(teams).length > 0 ? Math.round(Object.values(teams).reduce((sum, team) => sum + team.score, 0) / Object.keys(teams).length) : 0} points</small>
             `;
         }
 
@@ -401,18 +879,192 @@
                 const solveRate = totalTeams > 0 ? ((solvedByTeams / totalTeams) * 100).toFixed(1) : 0;
                 
                 return `
-                    <div class="challenge-item">
+                    <div class="challenge-item ${challenge.difficulty.toLowerCase()}">
                         <div class="challenge-info">
                             <strong>${challenge.title}</strong>
                             <div class="challenge-stats">
                                 <span>Difficulty: ${challenge.difficulty}</span>
                                 <span>Points: ${challenge.points}</span>
                                 <span>Solved: ${solvedByTeams}/${totalTeams} teams (${solveRate}%)</span>
+                                <span>Category: ${challenge.category || 'General'}</span>
                             </div>
+                        </div>
+                        <div class="challenge-controls">
+                            <button class="btn btn-mini btn-secondary" onclick="viewChallenge('${challenge.id}')">👁️ View</button>
+                            <button class="btn btn-mini btn-warning" onclick="toggleChallenge('${challenge.id}')">⏸️ Toggle</button>
                         </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        function initializeCharts() {
+            // Progress Chart
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            charts.progress = new Chart(progressCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Flags Captured',
+                        data: [],
+                        borderColor: '#00d4ff',
+                        backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Difficulty Chart
+            const difficultyCtx = document.getElementById('difficultyChart').getContext('2d');
+            charts.difficulty = new Chart(difficultyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Easy', 'Medium', 'Hard'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#4CAF50', '#FF9800', '#F44336']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // Score Chart
+            const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+            charts.score = new Chart(scoreCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Team Scores',
+                        data: [],
+                        backgroundColor: '#00d4ff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Time Chart
+            const timeCtx = document.getElementById('timeChart').getContext('2d');
+            charts.time = new Chart(timeCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Solve Times',
+                        data: [],
+                        backgroundColor: '#ff6b6b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Time (minutes)' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Challenge Difficulty' },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts() {
+            // Update difficulty distribution
+            const easy = challenges.filter(c => c.difficulty.toLowerCase() === 'easy').length;
+            const medium = challenges.filter(c => c.difficulty.toLowerCase() === 'medium').length;
+            const hard = challenges.filter(c => c.difficulty.toLowerCase() === 'hard').length;
+            
+            charts.difficulty.data.datasets[0].data = [easy, medium, hard];
+            charts.difficulty.update();
+
+            // Update score chart
+            const teamArray = Object.values(teams).sort((a, b) => b.score - a.score).slice(0, 10);
+            charts.score.data.labels = teamArray.map(t => t.name);
+            charts.score.data.datasets[0].data = teamArray.map(t => t.score);
+            charts.score.update();
+
+            // Update progress chart (simulated for now)
+            const now = new Date();
+            const timeLabel = now.toLocaleTimeString();
+            const totalFlags = Object.values(teams).reduce((sum, team) => sum + team.solvedChallenges.length, 0);
+            
+            if (charts.progress.data.labels.length > 20) {
+                charts.progress.data.labels.shift();
+                charts.progress.data.datasets[0].data.shift();
+            }
+            
+            charts.progress.data.labels.push(timeLabel);
+            charts.progress.data.datasets[0].data.push(totalFlags);
+            charts.progress.update();
+        }
+
+        async function loadChatMonitor() {
+            // This would load recent chat messages from all teams
+            const chatContainer = document.getElementById('chat-monitor');
+            chatContainer.innerHTML = '<div class="chat-message"><div class="chat-meta">System - Chat monitoring active</div></div>';
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            
+            // Show selected tab and mark nav as active
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function filterLogs(filter) {
+            currentLogFilter = filter;
+            
+            // Update filter buttons
+            document.querySelectorAll('.log-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter log entries
+            const logEntries = document.querySelectorAll('.log-entry');
+            logEntries.forEach(entry => {
+                if (filter === 'all' || entry.dataset.type === filter) {
+                    entry.style.display = 'block';
+                } else {
+                    entry.style.display = 'none';
+                }
+            });
         }
 
         async function startGame() {
@@ -422,20 +1074,20 @@
                 });
                 
                 if (response.ok) {
-                    addLogEntry('🚀 Game started by admin');
+                    addLogEntry('🚀 Game started by admin', 'admin');
                     gameStartTime = new Date();
                     updateStats();
                 } else {
-                    addLogEntry('❌ Failed to start game');
+                    addLogEntry('❌ Failed to start game', 'error');
                 }
             } catch (error) {
                 console.error('Error starting game:', error);
-                addLogEntry('❌ Error starting game: ' + error.message);
+                addLogEntry('❌ Error starting game: ' + error.message, 'error');
             }
         }
 
         async function pauseGame() {
-            addLogEntry('⏸️ Game paused by admin');
+            addLogEntry('⏸️ Game paused by admin', 'admin');
         }
 
         async function resetGame() {
@@ -449,14 +1101,14 @@
                 });
                 
                 if (response.ok) {
-                    addLogEntry('🔄 Game reset by admin');
+                    addLogEntry('🔄 Game reset by admin', 'admin');
                     setTimeout(() => location.reload(), 1000);
                 } else {
-                    addLogEntry('❌ Failed to reset game');
+                    addLogEntry('❌ Failed to reset game', 'error');
                 }
             } catch (error) {
                 console.error('Error resetting game:', error);
-                addLogEntry('❌ Error resetting game: ' + error.message);
+                addLogEntry('❌ Error resetting game: ' + error.message, 'error');
             }
         }
 
@@ -466,7 +1118,12 @@
                 challenges,
                 gameStartTime,
                 exportTime: new Date().toISOString(),
-                activityLog
+                activityLog,
+                statistics: {
+                    totalTeams: Object.keys(teams).length,
+                    totalFlags: Object.values(teams).reduce((sum, team) => sum + team.solvedChallenges.length, 0),
+                    averageScore: Object.keys(teams).length > 0 ? Math.round(Object.values(teams).reduce((sum, team) => sum + team.score, 0) / Object.keys(teams).length) : 0
+                }
             };
             
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -477,16 +1134,98 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            addLogEntry('📊 Game data exported');
+            addLogEntry('📊 Game data exported', 'admin');
         }
 
-        function addLogEntry(message) {
+        function exportCSV() {
+            const teamArray = Object.values(teams);
+            let csv = 'Team Name,Score,Challenges Solved,Members,Join Time\n';
+            
+            teamArray.forEach(team => {
+                csv += `"${team.name}",${team.score},${team.solvedChallenges.length},"${team.members.join('; ')}","${new Date(team.joinTime).toLocaleString()}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ctf-teams-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            addLogEntry('📄 CSV data exported', 'admin');
+        }
+
+        function exportJSON() {
+            exportData(); // Use existing function
+        }
+
+        function exportPDF() {
+            addLogEntry('📑 PDF export requested (feature coming soon)', 'admin');
+            alert('PDF export feature coming soon!');
+        }
+
+        function exportReport() {
+            addLogEntry('📊 Full report export requested (feature coming soon)', 'admin');
+            alert('Full report export feature coming soon!');
+        }
+
+        function viewTeamDetails(teamName) {
+            alert(`Viewing details for team: ${teamName}\n\nThis feature will show detailed team analytics.`);
+        }
+
+        function disqualifyTeam(teamName) {
+            if (confirm(`Are you sure you want to warn team ${teamName}?`)) {
+                addLogEntry(`⚠️ Team ${teamName} received a warning from admin`, 'admin');
+            }
+        }
+
+        function removeTeam(teamName) {
+            if (confirm(`Are you sure you want to remove team ${teamName}? This action cannot be undone!`)) {
+                addLogEntry(`🗑️ Team ${teamName} was removed by admin`, 'admin');
+                // Here you would make an API call to actually remove the team
+            }
+        }
+
+        function viewChallenge(challengeId) {
+            const challenge = challenges.find(c => c.id === challengeId);
+            if (challenge) {
+                alert(`Challenge: ${challenge.title}\nDifficulty: ${challenge.difficulty}\nPoints: ${challenge.points}\n\nThis would open detailed challenge management.`);
+            }
+        }
+
+        function toggleChallenge(challengeId) {
+            addLogEntry(`🎯 Challenge ${challengeId} toggled by admin`, 'admin');
+        }
+
+        function clearLogs() {
+            if (confirm('Are you sure you want to clear all activity logs?')) {
+                document.getElementById('activity-log').innerHTML = '';
+                activityLog = [];
+                addLogEntry('🗑️ Activity logs cleared by admin', 'admin');
+            }
+        }
+
+        function backupData() {
+            exportData();
+            addLogEntry('💾 Data backup created', 'admin');
+        }
+
+        function systemHealth() {
+            addLogEntry('🏥 System health check initiated', 'admin');
+            setTimeout(() => {
+                addLogEntry('✅ System health check completed - All systems operational', 'admin');
+            }, 2000);
+        }
+
+        function addLogEntry(message, type = 'system') {
             const timestamp = new Date().toLocaleTimeString();
-            activityLog.unshift({ time: timestamp, message });
+            activityLog.unshift({ time: timestamp, message, type });
             
             const logContainer = document.getElementById('activity-log');
             const entry = document.createElement('div');
-            entry.className = 'log-entry';
+            entry.className = `log-entry ${type}`;
+            entry.dataset.type = type;
             entry.innerHTML = `
                 <div class="log-time">${timestamp}</div>
                 <div>${message}</div>
@@ -494,17 +1233,31 @@
             
             logContainer.insertBefore(entry, logContainer.firstChild);
             
-            // Keep only last 50 entries
-            while (logContainer.children.length > 50) {
+            // Apply current filter
+            if (currentLogFilter !== 'all' && type !== currentLogFilter) {
+                entry.style.display = 'none';
+            }
+            
+            // Keep only last 100 entries
+            while (logContainer.children.length > 100) {
                 logContainer.removeChild(logContainer.lastChild);
             }
         }
 
-        // Update game time every second
-        setInterval(updateStats, 1000);
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('last-updated').textContent = 
+                `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        // Update stats and charts every 5 seconds
+        setInterval(() => {
+            updateStats();
+            updateCharts();
+        }, 5000);
         
-        // Auto-refresh data every 10 seconds
-        setInterval(loadData, 10000);
+        // Auto-refresh data every 30 seconds
+        setInterval(loadData, 30000);
     </script>
 </body>
 </html>

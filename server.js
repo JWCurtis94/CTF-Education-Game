@@ -432,78 +432,93 @@ app.post('/api/admin/start-game', (req, res) => {
   res.json({ success: true });
 });
 
-// Enhanced API endpoints
-app.get('/api/achievements/:teamName', (req, res) => {
-  const { teamName } = req.params;
-  const team = teams[teamName];
+// Additional admin endpoints for enhanced admin panel
+app.post('/api/admin/pause-game', (req, res) => {
+  gameState.paused = true;
+  io.emit('game-paused');
+  res.json({ success: true, message: 'Game paused' });
+});
+
+app.post('/api/admin/remove-team', (req, res) => {
+  const { teamName } = req.body;
   
-  if (!team) {
+  if (!teamName || !teams[teamName]) {
     return res.status(404).json({ error: 'Team not found' });
   }
   
-  res.json({
-    achievements: team.achievements || [],
-    availableAchievements: achievements
+  delete teams[teamName];
+  saveGameData();
+  io.emit('teams-updated', teams);
+  res.json({ success: true, message: `Team ${teamName} removed` });
+});
+
+app.post('/api/admin/warn-team', (req, res) => {
+  const { teamName, warning } = req.body;
+  
+  if (!teamName || !teams[teamName]) {
+    return res.status(404).json({ error: 'Team not found' });
+  }
+  
+  if (!teams[teamName].warnings) {
+    teams[teamName].warnings = [];
+  }
+  
+  teams[teamName].warnings.push({
+    message: warning || 'General warning',
+    timestamp: new Date().toISOString()
   });
+  
+  saveGameData();
+  io.emit('teams-updated', teams);
+  res.json({ success: true, message: `Warning sent to team ${teamName}` });
 });
 
-app.get('/api/leaderboard/history', (req, res) => {
-  res.json(leaderboardHistory);
-});
-
-app.get('/api/statistics', (req, res) => {
-  const stats = {
-    totalTeams: Object.keys(teams).length,
-    totalChallengesSolved: Object.values(teams).reduce((sum, team) => 
-      sum + team.solvedChallenges.length, 0),
-    averageScore: Object.values(teams).length > 0 ? 
-      Object.values(teams).reduce((sum, team) => sum + team.score, 0) / Object.values(teams).length : 0,
-    challengeCompletionRates: gameState.challenges.map(challenge => ({
-      id: challenge.id,
-      title: challenge.title,
-      completionRate: Object.values(teams).filter(team => 
-        team.solvedChallenges.includes(challenge.id)).length / Math.max(Object.keys(teams).length, 1) * 100
-    })),
-    topTeams: Object.values(teams)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
-      .map(team => ({ name: team.name, score: team.score }))
-  };
-  
-  res.json(stats);
-});
-
-app.post('/api/team-chat', (req, res) => {
-  const { teamName, message } = req.body;
-  
-  if (!teams[teamName]) {
-    return res.status(404).json({ error: 'Team not found' });
-  }
-  
-  if (!teamChatMessages[teamName]) {
-    teamChatMessages[teamName] = [];
-  }
-  
-  const chatMessage = {
-    message,
+app.get('/api/admin/system-health', (req, res) => {
+  const health = {
+    status: 'healthy',
+    uptime: process.uptime(),
+    memoryUsage: process.memoryUsage(),
     timestamp: new Date().toISOString(),
-    id: Date.now()
+    gameState: {
+      teamsCount: Object.keys(teams).length,
+      challengesCount: challenges.length,
+      isRunning: gameState.started,
+      isPaused: gameState.paused || false
+    }
   };
   
-  teamChatMessages[teamName].push(chatMessage);
-  
-  // Keep only last 50 messages per team
-  if (teamChatMessages[teamName].length > 50) {
-    teamChatMessages[teamName] = teamChatMessages[teamName].slice(-50);
-  }
-  
-  io.emit('team-chat-message', { teamName, ...chatMessage });
-  res.json({ success: true });
+  res.json(health);
 });
 
-app.get('/api/team-chat/:teamName', (req, res) => {
-  const { teamName } = req.params;
-  res.json(teamChatMessages[teamName] || []);
+app.get('/api/admin/analytics', (req, res) => {
+  const teamArray = Object.values(teams);
+  const analytics = {
+    teamStats: {
+      total: teamArray.length,
+      averageScore: teamArray.length > 0 ? teamArray.reduce((sum, team) => sum + team.score, 0) / teamArray.length : 0,
+      totalPlayers: teamArray.reduce((sum, team) => sum + team.members.length, 0)
+    },
+    challengeStats: challenges.map(challenge => {
+      const solvedBy = teamArray.filter(team => team.solvedChallenges.includes(challenge.id)).length;
+      return {
+        ...challenge,
+        solvedBy,
+        solveRate: teamArray.length > 0 ? (solvedBy / teamArray.length) * 100 : 0
+      };
+    }),
+    difficultyDistribution: {
+      easy: challenges.filter(c => c.difficulty.toLowerCase() === 'easy').length,
+      medium: challenges.filter(c => c.difficulty.toLowerCase() === 'medium').length,
+      hard: challenges.filter(c => c.difficulty.toLowerCase() === 'hard').length
+    },
+    timeline: gameState.startTime ? {
+      gameStarted: gameState.startTime,
+      currentTime: new Date().toISOString(),
+      elapsedMinutes: gameState.startTime ? Math.floor((Date.now() - new Date(gameState.startTime).getTime()) / 60000) : 0
+    } : null
+  };
+  
+  res.json(analytics);
 });
 
 // Challenge-specific routes
