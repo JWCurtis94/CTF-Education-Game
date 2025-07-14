@@ -23,6 +23,14 @@ app.use(express.static('public'));
 
 // Game state
 let teams = {};
+let achievements = {
+  'first_blood': { name: 'First Blood', description: 'Solve your first challenge', icon: '🩸', points: 50 },
+  'speed_demon': { name: 'Speed Demon', description: 'Solve a challenge in under 2 minutes', icon: '⚡', points: 100 },
+  'night_owl': { name: 'Night Owl', description: 'Solve challenges between 10PM-6AM', icon: '🦉', points: 75 },
+  'perfectionist': { name: 'Perfectionist', description: 'Solve all challenges without wrong attempts', icon: '💎', points: 200 },
+  'earth_defender': { name: 'Earth Defender', description: 'Complete all challenges', icon: '🌍', points: 500 }
+};
+
 let gameState = {
   started: false,
   startTime: null,
@@ -96,9 +104,86 @@ let gameState = {
       difficulty: "Expert",
       points: 500,
       hint: "This challenge combines multiple techniques. Think about everything you've learned!"
+    },
+    {
+      id: 8,
+      title: "Alien Network Analysis",
+      description: "Intercept alien network traffic. Analyze the PCAP file to find hidden communications.",
+      type: "network-forensics",
+      flag: "FLAG{network_detective}",
+      difficulty: "Advanced",
+      points: 400,
+      hint: "Look for unusual protocols or encrypted communications in the network dump.",
+      category: "forensics"
+    },
+    {
+      id: 9,
+      title: "Alien Cryptocurrency Heist",
+      description: "The aliens are using a blockchain to store invasion coordinates. Crack their wallet.",
+      type: "blockchain",
+      flag: "FLAG{crypto_master}",
+      difficulty: "Expert",
+      points: 450,
+      hint: "Check the smart contract for vulnerabilities or weak random number generation.",
+      category: "crypto"
+    },
+    {
+      id: 10,
+      title: "Social Engineering the Aliens",
+      description: "Gather intel on alien commanders through their social media profiles.",
+      type: "osint",
+      flag: "FLAG{information_gatherer}",
+      difficulty: "Intermediate",
+      points: 300,
+      hint: "Check their posts, comments, and metadata for clues about their plans.",
+      category: "misc"
+    },
+    {
+      id: 11,
+      title: "Alien Memory Corruption",
+      description: "Exploit a buffer overflow in the alien ship's navigation system.",
+      type: "pwn",
+      flag: "FLAG{buffer_overflow_expert}",
+      difficulty: "Expert",
+      points: 500,
+      hint: "Look for input validation issues and stack smashing opportunities.",
+      category: "pwn"
+    },
+    {
+      id: 12,
+      title: "Time-based Alien Attack",
+      description: "The aliens attack at specific intervals. Find the pattern in their timing.",
+      type: "timing-attack",
+      flag: "FLAG{time_traveler}",
+      difficulty: "Advanced",
+      points: 425,
+      hint: "Monitor response times and look for timing-based vulnerabilities.",
+      category: "crypto"
     }
   ]
 };
+
+// Enhanced game features
+let leaderboardHistory = [];
+let challengeAttempts = {};
+let teamChatMessages = {};
+
+// Periodic leaderboard snapshots
+setInterval(() => {
+  const snapshot = {
+    timestamp: new Date().toISOString(),
+    leaderboard: Object.values(teams)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10)
+  };
+  leaderboardHistory.push(snapshot);
+  
+  // Keep only last 24 hours of snapshots
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  leaderboardHistory = leaderboardHistory.filter(
+    snapshot => new Date(snapshot.timestamp) > oneDayAgo
+  );
+}, 5 * 60 * 1000); // Every 5 minutes
 
 // Initialize storage
 const dataDir = path.join(__dirname, 'data');
@@ -235,6 +320,7 @@ app.post('/api/teams', (req, res) => {
     members: members || [],
     score: 0,
     solvedChallenges: [],
+    achievements: [],
     joinTime: new Date().toISOString()
   };
   
@@ -264,6 +350,9 @@ app.post('/api/submit-flag', (req, res) => {
     teams[teamName].solvedChallenges.push(challengeId);
     teams[teamName].lastSolve = new Date().toISOString();
     
+    // Check and assign achievements
+    checkAndAssignAchievements(teams[teamName], challengeId);
+    
     saveGameData();
     io.emit('teams-updated', teams);
     io.emit('flag-captured', {
@@ -284,6 +373,48 @@ app.post('/api/submit-flag', (req, res) => {
   }
 });
 
+// Check and assign achievements to a team
+function checkAndAssignAchievements(team, challengeId) {
+  // Achievement: First Blood
+  if (team.solvedChallenges.length === 1 && !team.achievements.includes('first_blood')) {
+    team.achievements.push('first_blood');
+    team.score += achievements['first_blood'].points;
+    io.emit('achievement-unlocked', { team: team.name, achievement: achievements['first_blood'] });
+  }
+  
+  // Achievement: Speed Demon (for challenges that take less than 2 minutes)
+  const challenge = gameState.challenges.find(c => c.id === challengeId);
+  if (challenge && challenge.timeTaken < 120 && !team.achievements.includes('speed_demon')) {
+    team.achievements.push('speed_demon');
+    team.score += achievements['speed_demon'].points;
+    io.emit('achievement-unlocked', { team: team.name, achievement: achievements['speed_demon'] });
+  }
+  
+  // Achievement: Night Owl (for challenges solved between 10PM-6AM)
+  const hour = new Date().getHours();
+  if (hour >= 22 || hour < 6) {
+    if (!team.achievements.includes('night_owl')) {
+      team.achievements.push('night_owl');
+      team.score += achievements['night_owl'].points;
+      io.emit('achievement-unlocked', { team: team.name, achievement: achievements['night_owl'] });
+    }
+  }
+  
+  // Achievement: Perfectionist (if all challenges are solved without wrong attempts)
+  if (team.solvedChallenges.length === gameState.challenges.length && !team.achievements.includes('perfectionist')) {
+    team.achievements.push('perfectionist');
+    team.score += achievements['perfectionist'].points;
+    io.emit('achievement-unlocked', { team: team.name, achievement: achievements['perfectionist'] });
+  }
+  
+  // Achievement: Earth Defender (on completing all challenges)
+  if (team.solvedChallenges.length === gameState.challenges.length && !team.achievements.includes('earth_defender')) {
+    team.achievements.push('earth_defender');
+    team.score += achievements['earth_defender'].points;
+    io.emit('achievement-unlocked', { team: team.name, achievement: achievements['earth_defender'] });
+  }
+}
+
 // Admin routes
 app.post('/api/admin/reset', (req, res) => {
   teams = {};
@@ -301,16 +432,78 @@ app.post('/api/admin/start-game', (req, res) => {
   res.json({ success: true });
 });
 
-// Socket.io connections
-io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
+// Enhanced API endpoints
+app.get('/api/achievements/:teamName', (req, res) => {
+  const { teamName } = req.params;
+  const team = teams[teamName];
   
-  socket.emit('teams-updated', teams);
-  socket.emit('game-state', gameState);
+  if (!team) {
+    return res.status(404).json({ error: 'Team not found' });
+  }
   
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+  res.json({
+    achievements: team.achievements || [],
+    availableAchievements: achievements
   });
+});
+
+app.get('/api/leaderboard/history', (req, res) => {
+  res.json(leaderboardHistory);
+});
+
+app.get('/api/statistics', (req, res) => {
+  const stats = {
+    totalTeams: Object.keys(teams).length,
+    totalChallengesSolved: Object.values(teams).reduce((sum, team) => 
+      sum + team.solvedChallenges.length, 0),
+    averageScore: Object.values(teams).length > 0 ? 
+      Object.values(teams).reduce((sum, team) => sum + team.score, 0) / Object.values(teams).length : 0,
+    challengeCompletionRates: gameState.challenges.map(challenge => ({
+      id: challenge.id,
+      title: challenge.title,
+      completionRate: Object.values(teams).filter(team => 
+        team.solvedChallenges.includes(challenge.id)).length / Math.max(Object.keys(teams).length, 1) * 100
+    })),
+    topTeams: Object.values(teams)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)
+      .map(team => ({ name: team.name, score: team.score }))
+  };
+  
+  res.json(stats);
+});
+
+app.post('/api/team-chat', (req, res) => {
+  const { teamName, message } = req.body;
+  
+  if (!teams[teamName]) {
+    return res.status(404).json({ error: 'Team not found' });
+  }
+  
+  if (!teamChatMessages[teamName]) {
+    teamChatMessages[teamName] = [];
+  }
+  
+  const chatMessage = {
+    message,
+    timestamp: new Date().toISOString(),
+    id: Date.now()
+  };
+  
+  teamChatMessages[teamName].push(chatMessage);
+  
+  // Keep only last 50 messages per team
+  if (teamChatMessages[teamName].length > 50) {
+    teamChatMessages[teamName] = teamChatMessages[teamName].slice(-50);
+  }
+  
+  io.emit('team-chat-message', { teamName, ...chatMessage });
+  res.json({ success: true });
+});
+
+app.get('/api/team-chat/:teamName', (req, res) => {
+  const { teamName } = req.params;
+  res.json(teamChatMessages[teamName] || []);
 });
 
 // Challenge-specific routes

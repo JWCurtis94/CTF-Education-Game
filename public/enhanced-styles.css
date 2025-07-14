@@ -1,0 +1,182 @@
+/* Enhanced CTF Styles */
+
+/* Achievement System */
+.achievements-panel {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 2px solid var(--accent-color);
+}
+
+.achievement {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 8px 0;
+    background: var(--bg-color);
+    border-radius: 8px;
+    border-left: 4px solid var(--success-color);
+    transition: transform 0.2s ease;
+}
+
+.achievement.locked {
+    opacity: 0.5;
+    border-left-color: var(--muted-color);
+}
+
+.achievement:hover {
+    transform: translateX(5px);
+}
+
+.achievement-icon {
+    font-size: 2rem;
+    margin-right: 15px;
+}
+
+.achievement-info h4 {
+    margin: 0;
+    color: var(--text-color);
+}
+
+.achievement-info p {
+    margin: 5px 0 0 0;
+    color: var(--muted-color);
+    font-size: 0.9rem;
+}
+
+/* Live Activity Feed */
+.activity-feed {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.activity-icon {
+    font-size: 1.2rem;
+    margin-right: 10px;
+}
+
+.activity-text {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: var(--muted-color);
+}
+
+/* Progress Indicators */
+.progress-ring {
+    width: 120px;
+    height: 120px;
+    margin: 20px auto;
+}
+
+.progress-ring-circle {
+    transition: stroke-dasharray 0.35s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+.progress-text {
+    text-align: center;
+    margin-top: -80px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Team Collaboration */
+.team-members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.member-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Challenge Categories */
+.challenge-category {
+    background: var(--primary-color);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-block;
+    margin: 5px 5px 5px 0;
+}
+
+.category-web { background: #e74c3c; }
+.category-crypto { background: #9b59b6; }
+.category-forensics { background: #3498db; }
+.category-pwn { background: #e67e22; }
+.category-misc { background: #95a5a6; }
+
+/* Animations */
+@keyframes levelUp {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.level-up {
+    animation: levelUp 0.6s ease-in-out;
+}
+
+@keyframes achievement-unlock {
+    0% { transform: scale(0) rotate(0deg); opacity: 0; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+    100% { transform: scale(1) rotate(360deg); opacity: 1; }
+}
+
+.achievement-unlocked {
+    animation: achievement-unlock 0.8s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .achievements-panel {
+        padding: 15px;
+    }
+    
+    .achievement {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .achievement-icon {
+        margin: 0 0 10px 0;
+    }
+}
+
+/* Dark Mode Enhancements */
+[data-theme="dark"] .achievement {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .activity-feed {
+    background: rgba(255, 255, 255, 0.05);
+}
