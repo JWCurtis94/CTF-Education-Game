@@ -2,7 +2,6 @@
 let currentTeam = null;
 let challenges = [];
 let teams = {};
-let soundEnabled = true;
 let socket = null;
 
 // Initialize the application
@@ -18,22 +17,16 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeApp() {
     // Load saved settings
     const savedTheme = localStorage.getItem('ctf-theme') || 'light';
-    const savedSound = localStorage.getItem('ctf-sound') !== 'false';
     
     document.documentElement.setAttribute('data-theme', savedTheme);
-    soundEnabled = savedSound;
     
     updateThemeToggle();
-    updateSoundToggle();
 }
 
 // Setup event listeners
 function setupEventListeners() {
     // Theme toggle
     document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-    
-    // Sound toggle
-    document.getElementById('sound-toggle').addEventListener('click', toggleSound);
     
     // Help modal
     document.getElementById('help-toggle').addEventListener('click', showHelp);
@@ -90,7 +83,6 @@ function setupSocketConnection() {
     
     socket.on('flag-captured', function(data) {
         showToast(`🎉 ${data.teamName} captured "${data.title}" for ${data.points} points!`, 'success');
-        playSound('success');
         
         // Add celebration animation
         createCelebration();
@@ -139,7 +131,6 @@ function toggleTheme() {
     localStorage.setItem('ctf-theme', newTheme);
     
     updateThemeToggle();
-    playSound('click');
 }
 
 function updateThemeToggle() {
@@ -148,41 +139,9 @@ function updateThemeToggle() {
     themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
 }
 
-// Sound toggle
-function toggleSound() {
-    soundEnabled = !soundEnabled;
-    localStorage.setItem('ctf-sound', soundEnabled);
-    updateSoundToggle();
-    
-    if (soundEnabled) {
-        playSound('click');
-    }
-}
-
-function updateSoundToggle() {
-    const soundToggle = document.getElementById('sound-toggle');
-    soundToggle.textContent = soundEnabled ? '🔊 Sound ON' : '🔇 Sound OFF';
-}
-
-// Play sound effect
-function playSound(type) {
-    if (!soundEnabled) return;
-    
-    try {
-        const audio = document.getElementById(type === 'success' ? 'success-sound' : 'background-music');
-        if (audio) {
-            audio.currentTime = 0;
-            audio.play().catch(e => console.log('Audio play failed:', e));
-        }
-    } catch (error) {
-        console.log('Sound play error:', error);
-    }
-}
-
 // Show help modal
 function showHelp() {
     document.getElementById('help-modal').style.display = 'block';
-    playSound('click');
 }
 
 // Close modal
@@ -226,7 +185,6 @@ async function registerTeam() {
             showStatus('team-status', `🎉 Team "${teamName}" registered successfully!`, 'success');
             document.getElementById('team-name').value = '';
             document.getElementById('team-members').value = '';
-            playSound('success');
             
             // Update UI to show team is registered
             document.getElementById('register-team').textContent = '✅ Team Registered';
@@ -299,7 +257,6 @@ async function submitFlag() {
             showStatus('flag-status', `🎉 ${data.message} (+${data.points} points)`, 'success');
             document.getElementById('flag-input').value = '';
             document.getElementById('challenge-select').value = '';
-            playSound('success');
             
             // Update challenge as solved
             updateChallengeStatus(parseInt(challengeId), true);
@@ -397,7 +354,6 @@ function showHint(challengeId) {
     const challenge = challenges.find(c => c.id === challengeId);
     if (challenge) {
         showToast(`💡 Hint: ${challenge.hint}`, 'info', 8000);
-        playSound('click');
     }
 }
 
@@ -416,7 +372,6 @@ function openChallenge(challengeId) {
     
     // Open challenge in new tab with team parameter
     window.open(`/challenge/${challengeId}?team=${encodeURIComponent(currentTeam)}`, '_blank');
-    playSound('click');
 }
 
 // Update scoreboard
@@ -457,9 +412,6 @@ function showVictory(teamData) {
     document.getElementById('final-score').textContent = teamData.score;
     document.getElementById('challenges-solved').textContent = teamData.solvedChallenges.length;
     document.getElementById('victory-modal').style.display = 'block';
-    
-    // Play victory sound
-    playSound('success');
     
     // Create fireworks effect
     createFireworks();
@@ -629,7 +581,6 @@ window.CTFGame = {
     loadChallenges,
     loadTeams,
     toggleTheme,
-    toggleSound,
     showHint,
     openChallenge
 };
